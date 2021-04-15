@@ -6,7 +6,6 @@ output: pdf_document
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(Rcpp)
 ```
 
 ## R Markdown
@@ -16,26 +15,20 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{Rcpp}
-#include <Rcpp.h>
-#include <stdio.h>
-#include <math.h>
-
-//[[Rcpp::export]]
-
 double zetafunktion(double s,int genauigkeit)
 {
     double x = 0;
     for (long int i = pow(10, 10);(i > 0); i--)
     {
-        x += 1/(powl(i, s));
+        x += 1/(pow(i, s));
     }
     Rprintf("Zeta(2) = %.15f\n", x);
     return x;
 }
+```
 
-```
-```
-$\zeta$ = zetafunktion(10);
+```{r}
+C = zetafunktion(2, 10);
 ```
 ## Including Plots
 
