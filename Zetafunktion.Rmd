@@ -21,10 +21,12 @@ Die Riemannsche Zeta Funktion spielt eine wichtige Rolle fur viele Anwendungen i
 
 Wir wollen nun im folgenden $\zeta{(2)}$ numerisch auf die 15. Dezimalstelle genau berechnen. Dazu benutzen wir zuerst einen naiven Ansatz. 
 
-![](Konvergenzverhalten.pdf)
-
-
 ```{}
 #include <stdio.h>
 #include <math.h>
 ```
+
+![](Konvergenzverhalten.pdf)
+
+
+
