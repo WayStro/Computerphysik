@@ -86,6 +86,8 @@ int main(int argc, char const *argv[])
 }
 ```
 
+
+
 Unser Programm berechnet für jeden Schritt den N-ten Wert der Summe, und addiert diesen auf einen Gesamtwert. Die Werte nach jedem Schritt speichern wir für die ersten 100 Schritte in einer externen .txt Datei, damit das Konvergenzverhalten später geplottet werden kann. Die berechneten Werte sind in der Zeta_slow_data.txt Datei wiederzufinden. Dieser Ansatz liefert uns nach einer Rechenzeit von ca. 1 Minute eine Genauigeikt von 8 Nachkommastellen mit $10^9$ Schritten. Diese Methode ist also nicht ausreichend, um auf das gewollte Ergebnis zu kommen. 
 
 
