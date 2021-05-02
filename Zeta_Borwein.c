@@ -4,12 +4,12 @@
 #include <stdio.h>
 #include <math.h>
 
-double zetafunktion(double s,int genauigkeit, double* z)
+double zetafunktion(double s,long int genauigkeit, double* z)
 { 
     
     double x;
     double a = 1 / (1-pow(2, 1 - s));
-    for (long int i = 1;(i < pow(10, genauigkeit)); i++)
+    for (size_t i = 1;(i < genauigkeit); i++)
     {
         x += pow(-1, i-1)/(pow(i, s));
         if (i < 100)
@@ -24,16 +24,16 @@ double zetafunktion(double s,int genauigkeit, double* z)
 int main(int argc, char const *argv[])
 {
     double s = 2;                                                       //Wert fuer Zeta(s)
-    int genauigkeit = 4;                                                //Genauigkeit if Form von 10^genauigkeit
-    int N = pow(10, genauigkeit);
+    int genauigkeit = 9;                                                //Genauigkeit if Form von 10^genauigkeit
+    long int N = pow(10, genauigkeit);
     double z[100];
-    int y[N];
+    int y[100];
     for (int i = 1; i < 100; i++)                                         //Laufwert fuer Plot
     {
         y[i] = i;
     }
 
-    printf("Zeta(2) = %.15f\n",zetafunktion(s,genauigkeit,z));
+    printf("Zeta(2) = %.15f\n",zetafunktion(s,N,z));
 
     FILE* fp;
     fp = fopen("Zeta_Borwein_data.txt", "w");                              //oeffnet die Datei Zeta_Borwein_data.txt
