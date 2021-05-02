@@ -9,7 +9,7 @@ double zetafunktion(double s,long int genauigkeit, double* z)
     
     double x;
     double a = 1 / (1-pow(2, 1 - s));
-    for (size_t i = 1;(i < genauigkeit); i++)
+    for (size_t i = genauigkeit;(i > 0); i--)
     {
         x += pow(-1, i-1)/(pow(i, s));
         if (i < 100)
@@ -24,7 +24,7 @@ double zetafunktion(double s,long int genauigkeit, double* z)
 int main(int argc, char const *argv[])
 {
     double s = 2;                                                       //Wert fuer Zeta(s)
-    int genauigkeit = 9;                                                //Genauigkeit if Form von 10^genauigkeit
+    int genauigkeit = 8;                                                //Genauigkeit if Form von 10^genauigkeit
     long int N = pow(10, genauigkeit);
     double z[100];
     int y[100];
