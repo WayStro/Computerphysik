@@ -205,7 +205,23 @@ Da wir die letzten hundert Ergebnisse genommen haben, mussten wir den Graphen et
 
 ### Konvergenzordnung der Reihengleichung (\ref{eq:eins})
 
+Hierbei wird das Integralkriterium zur Abschätzung von Reihen verwendet, um die Kovergenzordnung zu bestimmen.\newline
+Die Kovergenzordnung wird durch die Ordnung der Restterme von $\zeta{(2)}-\sum_{k=1}^{n} \frac{1}{k^2}$ definiert. \newline
+Das Integralkriterium lautet:\newline
+Sei $p\in \mathbb{Z}, f:[p,\infty)\rightarrow[0,\infty)$ monoton fallend, dann gilt:\newline
+$f$ ist auf $[p,\infty)$ integrierbar  $\Longleftrightarrow \sum_{n=p}^{\infty}f(n)$ ist kovergent.\newline
+Dann gelten zwangsläufig folgende Abschätzungen, die später genutzt werden:\newline
+$\sum_{n=p+1}^{\infty}f(n)\leq\int_{p}^{\infty}f(x)dx\leq\sum_{n=p}^{\infty}f(n)$
 
+Nun zur Herleitung der Kovergenzordnung:
+\begin{equation}
+\zeta{(2)}-\sum_{k=1}^{n}\frac{1}{k^2}
+=\sum_{k=1}^{\infty}\frac{1}{k^2}-\sum_{k=1}^{n}\frac{1}{k^2}
+=\sum_{k=n+1}^{\infty}\frac{1}{k^2}\leq\int_{n}^{\infty}\frac{1}{x^2}dx
+=\lim_{a \to \infty}\left[\frac{-1}{x}\right]_n^a
+=\frac{1}{n}\leq\sum_{k=n}^{\infty}\frac{1}{k^2}
+\end{equation}
+Daraus lässt sich also die Kovergenzordnung auf $O(\frac{1}{n})$ bestimmen.
 
 ### Mögliche bessere Methoden zur Berechnung von $\zeta{(s)}$
 
