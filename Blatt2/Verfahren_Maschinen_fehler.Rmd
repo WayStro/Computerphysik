@@ -32,6 +32,7 @@ Zuerst wollen wir die Ableitung mit der Zwei-Punkt-Formel bestimmen:
 f^\prime(x_i) = \frac{f(x_i + h) - f(x_i)}{h}
 \end{equation}
 
+<<<<<<< HEAD
 mit $x_i = -1$ und $h$ wählbar. 
 
 Diese Formel können wir nun wie folgt in C implementieren:
@@ -75,5 +76,6 @@ d = Ableitung_expd(x_i, h)
 f
 d
 ```
+
 
 
