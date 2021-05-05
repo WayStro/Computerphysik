@@ -25,3 +25,29 @@ f^\prime(x_i) = \frac{f(x_i + h) - f(x_i)}{h}
 \end{equation}
 
 mit $x_i = -1$ und $h$ wählbar
+
+```{}
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+double Ableitung_expd(double x, double g){
+double z;
+double f;
+for (double h=1; h>g;h=h-g){
+z=(exp(x+h)-exp(x))/h;
+f=z-exp(-1);
+
+}
+printf("%f %f\n",z,f);
+}
+
+
+
+
+main(){
+
+
+Ableitung_expd(-1,0.00001);
+
+}
+```
