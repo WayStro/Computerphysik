@@ -1,5 +1,5 @@
 ---
-title: "Verfahrens- und Maschinenfehler"
+title: "Abgabe 2 Verfahrens- und Maschinenfehler"
 author: "Wayne Ströbel, Silas Müller"
 date: "5/5/2021"
 output: pdf_document
@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-##Verfahrens- und Maschinenfehler
+# Verfahrens- und Maschinenfehler
 
 Wir wollen anhand des Beispiels der numerischen Differentiation die bei praktischen Anwendungen häufig gegenläufig auftretenden Einflüsse von Verfahrens- und Maschinenfehler empirisch untersuchen. Wir betrachte die Ableitung der folgenden Testfunktion:
 
@@ -24,7 +24,7 @@ f(x) = e^x
 an der Stelle $x = -1$. 
 
 
-###Zwei-Punkt-Formel
+## Zwei-Punkt-Formel
 
 Zuerst wollen wir die Ableitung mit der Zwei-Punkt-Formel bestimmen:
 
@@ -32,7 +32,6 @@ Zuerst wollen wir die Ableitung mit der Zwei-Punkt-Formel bestimmen:
 f^\prime(x_i) = \frac{f(x_i + h) - f(x_i)}{h}
 \end{equation}
 
-<<<<<<< HEAD
 mit $x_i = -1$ und $h$ wählbar. 
 
 Diese Formel können wir nun wie folgt in C implementieren:
@@ -43,7 +42,6 @@ Diese Formel können wir nun wie folgt in C implementieren:
 #include <math.h>
 
 //[[Rcpp::export]]
-
 float PPAbleitung_expf(float x, float g){
   float z;
   float f;
@@ -55,7 +53,6 @@ float PPAbleitung_expf(float x, float g){
 }
 
 //[[Rcpp::export]]
-
 double PPAbleitung_expd(double x, double g){
   double z;
   double f;
@@ -64,27 +61,30 @@ double PPAbleitung_expd(double x, double g){
     f=z-exp(x);
   }
   return z;
+}
+
 //[[Rcpp::export]]
 double PPPAbleitung_expd(double x, double g){
- double z;
- double f;
- for (double h=1; h>g;h=h-g){
-  z=1/(2*h)*(exp(x+h)-exp(x-h));
-  f=z-exp(x);
- }
+  double z;
+  double f;
+  for (double h=1; h>g;h=h-g){
+    z=1/(2*h)*(exp(x+h)-exp(x-h));
+    f=z-exp(x);
+    }
  return z;
 }
+
 //[[Rcpp::export]]
 float PPPAbleitung_expf(float x, float g){
- float z;
- float f;
- for (float h=1; h>g;h=h-g){
-  z=1/(2*h)*(exp(x+h)-exp(x-h));
-  f=z-exp(x);
- }
- return z;
+  float z;
+  float f;
+  for (float h=1; h>g;h=h-g){
+    z=1/(2*h)*(exp(x+h)-exp(x-h));
+    f=z-exp(x);
+  }
+  return z;
 }
-}
+
 ```
 ```{r}
 x_i = -1
