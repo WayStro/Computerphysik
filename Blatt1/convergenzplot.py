@@ -1,6 +1,6 @@
 ##python3 convergenzplot.py
 ##Silas Mueller, Wayne Stroebel
-##bitte zuerst Zeta_Borwein.c und Zeta_slow.c ausführen um die Daten.txt files zu erstellen
+##bitte zuerst Zeta_Borwein.c und Zeta_slow.c ausfuehren um die Daten.txt files zu erstellen
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -17,7 +17,7 @@ for line in open('Zeta_Borwein_data.txt', 'r'):
     X2.append(values2[0])
     Y2.append(np.pi**2 / 6 - values2[1])
 
-plt.figure()
+
 plt.xlabel("Schrittzahl $i$")
 plt.ylabel("Wert $x_{i}$")
 plt.plot(X1, Y1, label=r'Zeta_slow')
@@ -25,4 +25,4 @@ plt.plot(X2, Y2, label=r'Zeta_Borwein')
 plt.hlines(np.pi**2 / 6, xmin=-10, xmax=110, label=r'Grenzwert',colors='green')
 plt.legend(loc='best',prop={'size':16})
 plt.savefig("Konvergenzverhalten.pdf")
-plt.show()
+
