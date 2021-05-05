@@ -44,7 +44,7 @@ Diese Formel können wir nun wie folgt in C implementieren:
 
 //[[Rcpp::export]]
 
-float Ableitung_expf(float x, float g){
+float PPAbleitung_expf(float x, float g){
   float z;
   float f;
   for (float h=1; h>g;h=h-g){
@@ -56,7 +56,7 @@ float Ableitung_expf(float x, float g){
 
 //[[Rcpp::export]]
 
-double Ableitung_expd(double x, double g){
+double PPAbleitung_expd(double x, double g){
   double z;
   double f;
   for (double h=1; h>g;h=h-g){
@@ -64,17 +64,40 @@ double Ableitung_expd(double x, double g){
     f=z-exp(x);
   }
   return z;
+//[[Rcpp::export]]
+double PPPAbleitung_expd(double x, double g){
+ double z;
+ double f;
+ for (double h=1; h>g;h=h-g){
+  z=1/(2*h)*(exp(x+h)-exp(x-h));
+  f=z-exp(x);
+ }
+ return z;
+}
+//[[Rcpp::export]]
+float PPPAbleitung_expf(float x, float g){
+ float z;
+ float f;
+ for (float h=1; h>g;h=h-g){
+  z=1/(2*h)*(exp(x+h)-exp(x-h));
+  f=z-exp(x);
+ }
+ return z;
+}
 }
 ```
 ```{r}
 x_i = -1
 h = 0.0001
 
-f = Ableitung_expf(x_i, h)
-d = Ableitung_expd(x_i, h)
-
-f
-d
+ff = PPAbleitung_expf(x_i, h)
+dd = PPAbleitung_expd(x_i, h)
+fff= PPPAbleitung_expf(x_i,h)
+ddd= PPPAbleitung_expd(x_i,h)
+ff
+dd
+fff
+ddd
 ```
 
 
