@@ -1,0 +1,27 @@
+---
+title: "Verfahrens- und Maschinenfehler"
+author: "Wayne Ströbel, Silas Müller"
+date: "5/5/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Verfahrens- und Maschinenfehler
+
+Wir wollen anhand des Beispiels der numerischen Differentiation die bei praktischen Anwendungen häufig gegenläufig auftretenden Einflüsse von Verfahrens- und Maschinenfehler empirisch untersuchen. Dazu berechnen wir mithilfe der 2-Punktformel die erste Ableitung der Testfunktion
+
+\begin{equation}
+\label{eq:f}
+f(x) = e^x
+\end{equation}
+
+an der Stelle $x = -1$. Also haben wir die entsprechende Formel:
+
+\begin{equation}
+f^\prime(x_i) = \frac{f(x_i + h) - f(x_i)}{h}
+\end{equation}
+
+mit $x_i = -1$ und $h$ wählbar
