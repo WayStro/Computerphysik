@@ -6,22 +6,74 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
+library(knitr)
+library(Rcpp)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
 ##Verfahrens- und Maschinenfehler
 
-Wir wollen anhand des Beispiels der numerischen Differentiation die bei praktischen Anwendungen häufig gegenläufig auftretenden Einflüsse von Verfahrens- und Maschinenfehler empirisch untersuchen. Dazu berechnen wir mithilfe der 2-Punktformel die erste Ableitung der Testfunktion
+Wir wollen anhand des Beispiels der numerischen Differentiation die bei praktischen Anwendungen häufig gegenläufig auftretenden Einflüsse von Verfahrens- und Maschinenfehler empirisch untersuchen. Wir betrachte die Ableitung der folgenden Testfunktion:
 
 \begin{equation}
 \label{eq:f}
 f(x) = e^x
 \end{equation}
 
-an der Stelle $x = -1$. Also haben wir die entsprechende Formel:
+an der Stelle $x = -1$. 
+
+
+###Zwei-Punkt-Formel
+
+Zuerst wollen wir die Ableitung mit der Zwei-Punkt-Formel bestimmen:
 
 \begin{equation}
 f^\prime(x_i) = \frac{f(x_i + h) - f(x_i)}{h}
 \end{equation}
 
-mit $x_i = -1$ und $h$ wählbar
+mit $x_i = -1$ und $h$ wählbar. 
+
+Diese Formel können wir nun wie folgt in C implementieren:
+```{Rcpp}
+#include <Rcpp.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+
+//[[Rcpp::export]]
+
+float Ableitung_expf(float x, float g){
+  float z;
+  float f;
+  for (float h=1; h>g;h=h-g){
+    z=(exp(x+h)-exp(x))/h;
+    f=z-exp(x);
+  }
+  return z;
+}
+
+//[[Rcpp::export]]
+
+double Ableitung_expd(double x, double g){
+  double z;
+  double f;
+  for (double h=1; h>g;h=h-g){
+    z=(exp(x+h)-exp(x))/h;
+    f=z-exp(x);
+  }
+  return z;
+}
+```
+```{r}
+x_i = -1
+h = 0.0001
+
+f = Ableitung_expf(x_i, h)
+d = Ableitung_expd(x_i, h)
+
+f
+d
+```
+
+
