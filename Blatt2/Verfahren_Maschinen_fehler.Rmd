@@ -36,32 +36,56 @@ mit $x_i = -1$ und $h$ wählbar.
 
 Diese Formel können wir nun wie folgt in C implementieren:
 ```{Rcpp}
-#include <Rcpp.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 
 //[[Rcpp::export]]
-float PPAbleitung_expf(float x, float g){
-  float z;
-  float f;
-  for (float h=1; h>g;h=h-g){
-    z=(exp(x+h)-exp(x))/h;
-    f=z-exp(x);
+double Maschinenfehler_Double(){
+  double k = 1;
+  int i = 22;
+  double x;
+  while (k == 1)
+  {
+    x += 1/(pow(10, i));
+    k += x;
   }
-  return z;
+  return x;
 }
 
 //[[Rcpp::export]]
-double PPAbleitung_expd(double x, double g){
-  double z;
-  double f;
-  for (double h=1; h>g;h=h-g){
-    z=(exp(x+h)-exp(x))/h;
-    f=z-exp(x);
+void PPAbleitung_expd(double h,double x, double g, double* Werte_double){
+  
+  int temp = h / g;
+  double Maschinenfehler = Maschinenfehler_Double();
+
+  for (int i = 0; i < temp; i += 5){
+    Werte_double[i] = h - i*g; 
+    Werte_double[i+1] = (exp(x+(h - i*g))-exp(x))/(h - i*g);
+    Werte_double[i+2] = (exp(x+(h - i*g))-exp(x))/(h - i*g)-exp(x);
+    Werte_double[i+3] = 1 / (2*(h - i*g)) * 0.8164965809 * Maschinenfehler * exp(x);
+    Werte_double[i+4] = Werte_double[i+2] - Werte_double[i+3];
+
   }
-  return z;
 }
+```
+```{r}
+Werte_Double
+
+
+```
+
+
+
+
+## Drei-Punkt-Formel
+
+```{Rcpp}
+#include <Rcpp.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+
 
 //[[Rcpp::export]]
 double PPPAbleitung_expd(double x, double g){
@@ -86,19 +110,7 @@ float PPPAbleitung_expf(float x, float g){
 }
 
 ```
-```{r}
-x_i = -1
-h = 0.0001
 
-ff = PPAbleitung_expf(x_i, h)
-dd = PPAbleitung_expd(x_i, h)
-fff= PPPAbleitung_expf(x_i,h)
-ddd= PPPAbleitung_expd(x_i,h)
-ff
-dd
-fff
-ddd
-```
 
 
 
