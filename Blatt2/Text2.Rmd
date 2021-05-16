@@ -1,0 +1,44 @@
+---
+title: "Erklärungen Blatt 2"
+author: "Silas Müller"
+date: "16 5 2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Erläuterungen der Formeln und Bestimmung der Fehler
+
+### 3-Punkt-Formel
+Die 3-Punkt-Formel nähert die Ableitung wie folgt, wobei $\Delta V$ dem Verfahrensfehler entspricht.
+$$f'(x)=\frac{f(x+h)-f(x-h)}{2h}+\Delta V$$
+Betrachtet man nun auch den Maschinenfehler so stellt man fest, dass $f(x+h)$ auf $$[(1-\delta_m)f(x+h),(1+\delta_m)f(x+h)]$$ abgebildet wird (analog für $f(x)$ und $f(x+h)$). Nimmt man nun eine gleichverteilte Wahrscheinlichkeitsverteilung an, so ergibt sich ein Fehler von $\sigma=\frac{\delta_m}{\sqrt{3}}$ (siehe Vorlesung). Berechnet man nun den Maschinenfehler so ergibt sich: $$\Delta M(f(x+h)-f(x-h))=\sqrt{2}\sigma|f(x)|$$
+Betrachtet man nun den Gesamtfehler $\epsilon_g$ mit der wahren Ableitung $f'(x)$: $$\epsilon_g=\epsilon_m+\epsilon_v=|f'(x)-\frac{f(x+h)-f(x-h)}{2h}|$$
+Also ergibt sich für den Maschinenfehler für die 3-Punkt-Formel:
+$$\epsilon_m=\frac{1}{2h}\sqrt{\frac{2}{3}}|f(x)|$$
+und für den Verfahrensfehler:
+$$\epsilon_v=\epsilon_g-\epsilon_m$$
+
+
+### 2-Punkt-Formel
+Die 2-Punkt-Formel nähert die Ableitung wie folgt, wobei $\Delta V$ auch hier dem Verfahrensfehler entspricht.
+$$f'(x)=\frac{f(x+h)-f(x)}{h}+\Delta V$$
+Die Herleitung ist hier komplett anlog zur 3-Punkt-Formel. Mit der Näherung von $f(x)\approx f(x+h) \approx f(x-h)$ für die Fehlerfortpflanzung ergibt sich:
+$$\epsilon_g=\epsilon_m+\epsilon_v=|f'(x)-\frac{f(x+h)-f(x-h)}{h}|$$
+und $$\epsilon_m=\frac{1}{h}\sqrt{\frac{2}{3}}|f(x)|$$
+sowie $$\epsilon_v=\epsilon_g-\epsilon_m$$
+
+### Vergleich
+Der Verfahrensfehler bei der 3-Punkt-Formel ist proportional zu $h^2$, während der Verfahrensfehler bei der 2-Punkt-Formel proportional zu h ist. Für beide Verfahren nimmt also der Verfahrensfehler für kleine h ab, bei der 3-Punkt-Formel jedoch deutlich schneller. Gleichzeitig ist anhand des Maschinenfehlers zu erkennen, dass dieser mit kleinerem h anwächst. Es sollte also ein "idealer Punkt" existieren, bei dem der Gesamtfehler am geringsten ist. Vergleiche hierzu auch die Auftragung der Ergebnisse am Ende.
+
+## Float und Double, Maschinengenauigkeit, Mantissenlänge
+Es werden die 2-Punkt-Formel und 3-Punkt-Formel mit verschiedenen Genauigkeitsstufen durchgeführt (double und float). Anhand der Resultate sollen die Maschinengenauigkeit und Mantissenlängen der einzelnen Datenobjekte abgeschätzt und mit bekannten Definitionen verglichen werden, mit der kleinsten Zahl $\delta_m$ für die das Folgende gilt und der Mantissenlänge k und Basis E:
+$$rd(1.0+\delta_m)>1.0\enspace und \enspace \delta_m=\frac{E}{2}E^{-k} $$
+hier kommt ne coole abschätzung und Berechnung
+
+## Quelle
+Vorlesung vom 23.4 (Fehler und 2 bzw. 3-Punkt-Formel) und 14.4 (Maschinengenauigkeit,Mantissenlänge) 
+
+
