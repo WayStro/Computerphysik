@@ -8,6 +8,7 @@ output: pdf_document
 ```{r setup, include=FALSE}
 library(knitr)
 library(Rcpp)
+library(reticulate)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -23,6 +24,56 @@ f(x) = e^x
 
 an der Stelle $x = -1$. 
 
+## Maschinenzahl
+
+Um bei den folgenden Punkten den Maschinenfehler zu berechnen müssen wir zuerst die Maschinenzahl in den jeweiligen Genauigkeitsstufen bestimmen. Dazu haben wir einen Code in C solange sehr kleine Zahlen auf 1 addiert, bis das Program die Zahl als ungleich 1 darstellt :
+
+```{Rcpp}
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+
+
+
+
+//[[Rcpp::export]]
+double Maschinenfehler_Double(){
+  double k = 1;
+  double x = 0;
+  while (k == 1)
+  {
+    x += 0.000000000000000000001;
+    k += x;
+  }
+  return x;
+}
+
+
+//[[Rcpp::export]]
+float Maschinenfehler_Float(){
+  float k = 1.0;
+  float x = 0;
+  for (int i = 0; k == 1.0; i++)
+  {
+    x += 0.000000001;
+    k += x;
+  }
+  return x;
+}
+```
+
+```{r}
+Maschinenzahl_Double <- Maschinenfehler_Double()
+Maschinenzahl_Float <- Maschinenfehler_Float()
+```
+
+Mit dem Programm erhalten wir für die Maschinenzahl folgende Werte:
+
+Double $=$ `r Maschinenzahl_Double`
+
+Float $=$ `r Maschinenzahl_Float`
+
+Diese werden im weiteren Verlauf zur Bestimmung der Fehler benutzt.
 
 ## Zwei-Punkt-Formel
 
@@ -40,11 +91,73 @@ Die Rechnung wird für verschiedene Datentypen (\texttt{double} und \texttt{floa
 
 Diese Formel können wir nun wie folgt in C implementieren:
 
-C-CODE
+```{Rcpp}
+#include <Rcpp.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+
+
+
+//[[Rcpp::export]]
+Rcpp::NumericVector PPAbleitung_expf(float h,float x,float g,float Maschinenfehler){
+
+  int temp = h / g;
+  
+  Rcpp::NumericVector Werte_float(temp);
+  
+  for (int i = 0; i < temp; i += 5){
+    Werte_float[i] = h - i*g; 
+    Werte_float[i+1] = (exp(x+(h - i*g))-exp(x))/(h - i*g);
+    Werte_float[i+2] = (exp(x+(h - i*g))-exp(x))/(h - i*g)-exp(x);
+    Werte_float[i+3] = 1 / ((h - i*g)) * 0.8164965809 * Maschinenfehler * exp(x);
+    Werte_float[i+4] = Werte_float[i+2] - Werte_float[i+3];
+
+  }
+  return Werte_float;
+}
+
+//[[Rcpp::export]]
+Rcpp::NumericVector PPAbleitung_expd(double h,double x, double g, double Maschinenfehler){
+  
+  int temp = h / g;
+  
+  Rcpp::NumericVector Werte_double(temp);
+
+  for (int i = 0; i < temp; i += 5){
+    Werte_double[i] = h - i*g; 
+    Werte_double[i+1] = (exp(x+(h - i*g))-exp(x))/(h - i*g);
+    Werte_double[i+2] = (exp(x+(h - i*g))-exp(x))/(h - i*g)-exp(x);
+    Werte_double[i+3] = 1 / ((h - i*g)) * 0.8164965809 * Maschinenfehler * exp(x);
+    Werte_double[i+4] = Werte_double[i+2] - Werte_double[i+3];
+
+  }
+  return Werte_double;
+}
+```
+```{r}
+x <- -1
+
+#ZweiPunktFloat
+ppf_h <- 0.01
+ppf_g <- 0.00005
+
+PPAblExp_float <- PPAbleitung_expf(ppf_h,x,ppf_g,Maschinenzahl_Float)
+
+#ZweiPunktDouble
+ppd_h <- 0.0001
+ppd_g <- 0.000000001
+
+PPAblExp_double <- PPAbleitung_expd(ppd_h,x,ppd_g,Maschinenzahl_Double)
+```
+
+
+
 
 ## Plots für die 2-Punkt-Formel
-PLOTS
-CODE FÜR PLOTS
+
+PLOTPLOTPLOTPLOT
+
 
 ## Erläuterung der Auftragung
 BLABLABLA
@@ -66,7 +179,66 @@ $$\epsilon_v=\epsilon_g-\epsilon_m$$
 Für die genannte Testfunktion soll nun die 3-Punkt-Formel angwendet und die jeweiligen Fehler extrahiert und gegen h aufgetragen werden. Außerdem wird die Rechnung für verschiedene Datentypen (double und float) durchgeführt und später im Hinblick auf die Genauigkeit verglichen. Dies geschieht ebenfalls in einem dekadischen log-log-System.
 Es folgt die Implementierung in C und späteres Plotten:
 
-C-CODE
+```{Rcpp}
+#include <Rcpp.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+
+
+//[[Rcpp::export]]
+Rcpp::NumericVector PPPAbleitung_expf(float h,float x,float g,float Maschinenfehler){
+
+  int temp = h / g;
+  
+  Rcpp::NumericVector Werte_float(temp);
+
+  for (int i = 0; i < temp; i += 5){
+    Werte_float[i] = h - i*g; 
+    Werte_float[i+1] = (exp(x+(h - i*g))-exp(x-(h - i*g)))/(2*(h - i*g));
+    Werte_float[i+2] = (exp(x+(h - i*g))-exp(x-(h - i*g)))/(2*(h - i*g))-exp(x);
+    Werte_float[i+3] = 1 / (2*(h - i*g)) * 0.8164965809 * Maschinenfehler * exp(x);
+    Werte_float[i+4] = Werte_float[i+2] - Werte_float[i+3];
+
+  }
+  return Werte_float;
+}
+
+//[[Rcpp::export]]
+Rcpp::NumericVector PPPAbleitung_expd(double h,double x,double g,double Maschinenfehler){
+
+  int temp = h / g;
+  
+  Rcpp::NumericVector Werte_double(temp);
+
+  for (int i = 0; i < temp; i += 5){
+    Werte_double[i] = h - i*g; 
+    Werte_double[i+1] = (exp(x+(h - i*g))-exp(x-(h - i*g)))/(2*(h - i*g));
+    Werte_double[i+2] = (exp(x+(h - i*g))-exp(x-(h - i*g)))/(2*(h - i*g))-exp(x);
+    Werte_double[i+3] = 1 / (2*(h - i*g)) * 0.8164965809 * Maschinenfehler * exp(x);
+    Werte_double[i+4] = Werte_double[i+2] - Werte_double[i+3];
+
+  }
+  return Werte_double;
+}
+```
+```{r}
+x <- -1
+
+#DreiPunktFloat
+pppf_h <- 0.1
+pppf_g <- 0.0005
+
+PPPAblExp_float <- PPPAbleitung_expf(pppf_h,x,pppf_g,Maschinenzahl_Float)
+
+#DreiPunktDouble
+pppd_h <- 0.0001
+pppd_g <- 0.0000005
+
+PPPAblExp_double <- PPPAbleitung_expd(pppd_h,x,pppd_g,Maschinenzahl_Double)
+```
+
+
 
 ## Plots für die 3-Punkt-Formel
 PLOTS
