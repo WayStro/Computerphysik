@@ -24,10 +24,14 @@ f(x) = e^x
 
 an der Stelle $x = -1$. 
 
-## Maschinenzahl
+## Maschinengenauigkeit
 
-Um bei den folgenden Punkten den Maschinenfehler zu berechnen müssen wir zuerst die Maschinenzahl in den jeweiligen Genauigkeitsstufen bestimmen. Dazu haben wir einen Code in C solange sehr kleine Zahlen auf 1 addiert, bis das Program die Zahl als ungleich 1 darstellt :
-
+Um bei den folgenden Punkten den Maschinenfehler zu berechnen müssen wir zuerst die Maschinengenauigkeit bestimmen. Für diese gilt:
+\begin{equation}
+\label{eq:mg}
+rd(1.0+\delta_m)>1.0
+\end{equation}
+Dafür haben wir dann einen Code geschrieben, der uns für die Datentypen double und float das $\delta_m$ berechnen:
 ```{Rcpp}
 #include <stdlib.h>
 #include <stdio.h>
@@ -73,7 +77,13 @@ Double $=$ `r Maschinenzahl_Double`
 
 Float $=$ `r Maschinenzahl_Float`
 
-Diese werden im weiteren Verlauf zur Bestimmung der Fehler benutzt.
+die Literaturwerte nach IEEE 754 Standard lauten:
+
+Double $= 2^{-53} \approx 1.1*10^{-16}$
+
+Float $= 2^{-24} \approx 6*10^{-8}$
+
+Also liegen unsere ermittelten Werte sehr nah an den tatsächlichen.
 
 ## Zwei-Punkt-Formel
 
@@ -171,8 +181,8 @@ ppf_verf <- nth_element(PPAblExp_float, 5, 5)
 
 plot(log10(ppf_h), log10(ppf_ges), 
      main="Fehler der 2-Punkt-Formel mit Float",
-     ylab="",
-     xlab="h",
+     ylab="log_10(Fehler)",
+     xlab="log_10(h)",
      type="l",
      col="blue")
 lines(log10(ppf_h), log10(ppf_masch), col="red")
@@ -188,8 +198,8 @@ ppd_verf <- nth_element(PPAblExp_double, 5, 5)
 
 plot(log10(ppd_h), log10(ppd_ges), 
      main="Fehler der 2-Punkt-Formel mit Double",
-     ylab="",
-     xlab="h",
+     ylab="log_10(Fehler)",
+     xlab="log_10(h)",
      type="l",
      col="blue",
      ylim=c(-10,-7))
@@ -294,8 +304,8 @@ pppf_verf <- nth_element(PPPAblExp_float, 5, 5)
 
 plot(log10(pppf_h), log10(pppf_ges), 
      main="Fehler der 3-Punkt-Formel mit Float",
-     ylab="",
-     xlab="h",
+     ylab="log_10(Fehler)",
+     xlab="log_10(h)",
      type="l",
      col="blue",
      ylim=c(-7,-3.5))
@@ -312,8 +322,8 @@ pppd_verf <- nth_element(PPPAblExp_double, 5, 5)
 
 plot(log10(pppd_h), log10(pppd_ges), 
      main="Fehler der 3-Punkt-Formel mit Double",
-     ylab="",
-     xlab="h",
+     ylab="log_10(Fehler)",
+     xlab="log_10(h)",
      type="l",
      col="blue",
      ylim=c(-13,-9.5))
@@ -331,15 +341,20 @@ BLABLABLA
 Der Verfahrensfehler bei der 3-Punkt-Formel ist proportional zu $h^2$, während der Verfahrensfehler bei der 2-Punkt-Formel proportional zu h ist. Für beide Verfahren nimmt also der Verfahrensfehler für kleine h ab, bei der 3-Punkt-Formel jedoch deutlich schneller. Gleichzeitig ist anhand des Maschinenfehlers zu erkennen, dass dieser mit kleinerem h anwächst. Es sollte also ein "idealer Punkt" existieren, bei dem der Gesamtfehler am geringsten ist. Vergleiche hierzu auch die Auftragung der jeweiligen Ergebnisse.
 VERGLEICH
 
-## Float und Double, Maschinengenauigkeit, Mantissenlänge
+## Float und Double, Mantissenlänge
 Es werden die 2-Punkt-Formel und 3-Punkt-Formel mit verschiedenen Genauigkeitsstufen durchgeführt (double und float). Anhand der Resultate sollen die Maschinengenauigkeit und Mantissenlängen der einzelnen Datenobjekte abgeschätzt und mit bekannten Definitionen verglichen werden, mit der kleinsten Zahl $\delta_m$ für die das Folgende gilt und der Mantissenlänge k und Basis E:
 \begin{equation}
-rd(1.0+\delta_m)>1.0\enspace und \enspace \delta_m=\frac{E}{2}E^{-k}
+\delta_m=\frac{E}{2}E^{-k}
 \end{equation}
 ABSCHÄTZUNG UND BERECHNUNG
 
 ## Fazit
-FAZIT
+Bei den Verfahren stellte sich die Herausforderung, einen guten Wertebereich zu finden, in dem man die Relation zwischen Verfahrens- und Maschinenfehler, sowie der Instabilität bei kleiner werdenden h gut zeigen kann. 
+
+Letzendlich können wir sagen, dass wir mit der Drei-Punkt-Formel bei gleichen h-Werten deutlich geringere Verfahrensfehler sehen, als bei der der Zwei-Punkt-Formel. In den einzelnen Verfahren erkennt man außerdem, dass doubles eine deutlich kleinere Maschinenzahl besitzen als floats, es also für genauere Rechnungen besser ist, in doubles zu rechnen, als in floats.
 
 ## Quelle
 Vorlesung vom 23.4 (Fehler und 2 bzw. 3-Punkt-Formel) und 14.4 (Maschinengenauigkeit,Mantissenlänge) 
+
+IEEE 754; Wikipedia, \url{https://de.wikipedia.org/wiki/IEEE_754}
+
