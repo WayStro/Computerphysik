@@ -213,7 +213,8 @@ legend("topleft", c("Gesamtfehler","Maschinen-","Verfahrens-"),
 
 
 ## Erläuterung der Auftragung
-BLABLABLA
+Es wurden die bereits genannten Fehler doppellogarithmisch gegen h aufgetragen. Es ist gut zu erkennen, dass für große h der Verfahrensfehler ansteigt und dieser praktisch dem Gesamtfehler entspricht. Erst für kleine h weicht der Verfahrensfehler stärker von dem Gesamtfehler ab und der Maschinenfehler steigt signifikant. So ist der erwähnte "ideale Punkt" mit dem kleinsten Fehler zu erkennen. Es ist außerdem zu erwähnen, dass eben der Maschinenfehler für kleine h dem Gesamtfehler entspricht. Nähert man sich diesem Punkt, an dem der Maschinenfehler der signifikante Fehler wird, so entstehen auch Probleme in der Berechnung des Gesamt- und Verfahrenfehlers, sodass diese instabil werden. Dies ist durch das "Springen" der Graphen in diesem Bereich erkennbar.
+Des Weiteren ist ein deutlicher Unterschied zwischen double und float erkennbar. Die double Rechnung liefert deutlich geringere Fehler, und ließ sich dem entsprechend bei kleineren h deutlich genauer durchführen.
 
 ## Drei-Punkt-Formel
 
@@ -335,18 +336,19 @@ legend("topleft", c("Gesamtfehler","Maschinen-","Verfahrens-"),
 
 
 ## Erläuterung der Auftragung
-BLABLABLA
+Die Erläuterung ist hier praktisch analog zum 2-Punkt-Verfahren. Jedoch ist im Vergleich ein deutlich geringerer Fehler zu erkennen. Dies ist hauptsächlich auf geringere Verfahrensfehler des 3-Punkt-Verfahrens zurückzuführen. Das Gesamtverhalten ist jedoch analog zur 2-Punkt-Formel.
 
 ## Vergleich 3-Punkt- und 2-Punkt-Formel
 Der Verfahrensfehler bei der 3-Punkt-Formel ist proportional zu $h^2$, während der Verfahrensfehler bei der 2-Punkt-Formel proportional zu h ist. Für beide Verfahren nimmt also der Verfahrensfehler für kleine h ab, bei der 3-Punkt-Formel jedoch deutlich schneller. Gleichzeitig ist anhand des Maschinenfehlers zu erkennen, dass dieser mit kleinerem h anwächst. Es sollte also ein "idealer Punkt" existieren, bei dem der Gesamtfehler am geringsten ist. Vergleiche hierzu auch die Auftragung der jeweiligen Ergebnisse.
-VERGLEICH
+Bei beiden Verfahren stellt sich die double Rechnung als deutlich genauer heraus als die float Rechnung, erklärbar durch die berechneten Maschinengenauigkeiten und Mantissenlängen der Datentypen.
 
 ## Float und Double, Mantissenlänge
-Es werden die 2-Punkt-Formel und 3-Punkt-Formel mit verschiedenen Genauigkeitsstufen durchgeführt (double und float). Anhand der Resultate sollen die Maschinengenauigkeit und Mantissenlängen der einzelnen Datenobjekte abgeschätzt und mit bekannten Definitionen verglichen werden, mit der kleinsten Zahl $\delta_m$ für die das Folgende gilt und der Mantissenlänge k und Basis E:
+Es werden die 2-Punkt-Formel und 3-Punkt-Formel mit verschiedenen Genauigkeitsstufen durchgeführt (double und float). Anhand der Resultate sollen die Maschinengenauigkeit und Mantissenlängen der einzelnen Datenobjekte abgeschätzt und mit bekannten Definitionen verglichen werden, mit der Maschinengenauigkeit $\delta_m$ für die das Folgende gilt und der Mantissenlänge k und Basis E:
 \begin{equation}
 \delta_m=\frac{E}{2}E^{-k}
 \end{equation}
-ABSCHÄTZUNG UND BERECHNUNG
+RECHNUNG
+Wie zu erwarten besitzt der float-Datentyp eine geringere Mantissenlänge und Genauigkeit als der double Datentyp (mit der Basis E=2). Ein Vergleich mit der Literatur bestätigt dies (nach IEEE 754: float 23 bit, double 52 bit). 
 
 ## Fazit
 Bei den Verfahren stellte sich die Herausforderung, einen guten Wertebereich zu finden, in dem man die Relation zwischen Verfahrens- und Maschinenfehler, sowie der Instabilität bei kleiner werdenden h gut zeigen kann. 
