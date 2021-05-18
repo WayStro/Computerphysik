@@ -347,7 +347,20 @@ Es werden die 2-Punkt-Formel und 3-Punkt-Formel mit verschiedenen Genauigkeitsst
 \begin{equation}
 \delta_m=\frac{E}{2}E^{-k}
 \end{equation}
-RECHNUNG
+Diese Definition können wir nun mit $E = 2$ umstellen zu:
+\begin{equation}
+|{\log_{2}{(\delta_m})}| = k
+\end{equation}
+```{r}
+k_double <- abs(log2(Maschinenzahl_Double))
+k_float <- abs(log2(Maschinenzahl_Float))
+```
+Damit erhalten wir:
+
+Double = `r k_double`
+
+Float = `r k_float`
+
 Wie zu erwarten besitzt der float-Datentyp eine geringere Mantissenlänge und Genauigkeit als der double Datentyp (mit der Basis E=2). Ein Vergleich mit der Literatur bestätigt dies (nach IEEE 754: float 23 bit, double 52 bit). 
 
 ## Fazit
