@@ -1,0 +1,14 @@
+---
+title: "Pandemieausbreitung"
+author: "Wayne Ströbel, Silas Müller"
+date: "5/30/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(Rcpp)
+library(reticulate)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
