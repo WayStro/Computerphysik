@@ -57,7 +57,7 @@ x{i+1}=x_i+\frac{h}{2}(f(t_i,x_i)+f(t_i+h,x_i+hf(t_i,x_i)))
 \end{equation}
 Dieses Verfahren leifert einen Fehler der Ordnung $O(h^3)$ und wird im folgenden genutzt.
 
-# Neue Krankheit: DGL ohne Gegenaßnahmen
+# Neue Krankheit: DGL ohne Gegenmaßnahmen
 
 Zunächst wird für eine neue Krankheit (also $R(0)=0$) mit $\frac{1}{\alpha}=7$ und $\Gamma=\gamma=0$, sowie der Gesamtbevölkerung Deutschlands $N=8.3 \cdot 10^7$, den Anteil an der Gesamtbevölkerung bestimmt, der infiziert wurde, bis die Krankheit abklingt ($I(t)<1$), als Funktion von $R_0 \in [1,20]$.
 Dabei sollen folgende Anfangsbedingungen gelten:
