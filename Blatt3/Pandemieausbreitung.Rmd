@@ -76,11 +76,12 @@ f(t_i,I_i)=\alpha \frac{R_0}{N}S(t_i)I_i-\alpha I_i
 ## Code
 
 ```{Rcpp}
+#include <Rcpp.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include <algorithm> 
-#include <Rcpp.h>
+
 
 
 
@@ -102,8 +103,10 @@ typedef struct{
 void f(Status oldStatus, Parameter parameter, Status& newStatus){
 
     double Gamma = std::min(parameter.gamma,oldStatus.S);
-    newStatus.S = - ((parameter.beta/parameter.N) * oldStatus.S * oldStatus.I) - (Gamma) + (parameter.delta * oldStatus.V);
-    newStatus.I = ((parameter.beta/parameter.N) * oldStatus.S * oldStatus.I) - (parameter.alpha * oldStatus.I);
+    newStatus.S = - ((parameter.beta/parameter.N) * oldStatus.S * oldStatus.I) 
+    - (Gamma) + (parameter.delta * oldStatus.V);
+    newStatus.I = ((parameter.beta/parameter.N) * oldStatus.S * oldStatus.I) 
+    - (parameter.alpha * oldStatus.I);
     newStatus.R = (parameter.alpha * oldStatus.I);
     newStatus.V = (Gamma) - (parameter.delta * oldStatus.V);
 
@@ -116,14 +119,14 @@ void rungeKuttaStep(Status oldStatus, Parameter parameter, Status& newStatus, do
     f(oldStatus, parameter, f_i);
     Status f_i1;
 
-    Status rechnung = {
+    Status rechnung;
+    
+    rechnung.S = oldStatus.S + h*f_i.S;
+    rechnung.I = oldStatus.I + h*f_i.I;
+    rechnung.R = oldStatus.R + h*f_i.R;
+    rechnung.V = oldStatus.V + h*f_i.V;
 
-        .S = oldStatus.S + h*f_i.S,
-        .I = oldStatus.I + h*f_i.I,
-        .R = oldStatus.R + h*f_i.R,
-        .V = oldStatus.V + h*f_i.V
-
-    } ; 
+    
 
     f(rechnung, parameter, f_i1);
 
@@ -134,7 +137,8 @@ void rungeKuttaStep(Status oldStatus, Parameter parameter, Status& newStatus, do
 }
 
 //[[Rcpp::export]]
-void ohneGegenmassnahmen(double alpha, double beta, double delta, double gamma, double N, double I0, double R0, double V0)
+void ohneGegenmassnahmen(double alpha, double beta, double delta, 
+    double gamma, double N, double I0, double R0, double V0, double h)
 {
     Parameter SIR_P;
     SIR_P.alpha = alpha;
@@ -148,16 +152,13 @@ void ohneGegenmassnahmen(double alpha, double beta, double delta, double gamma, 
     old.I = I0;
     old.R = R0;
     old.V = V0;
-
+      
     Status newSIR;
 
     while (old.I > 1)
     {
     
-        rungeKuttaStep(old, SIR_P, old, 0.10);
-
-        printf("%f %f %f %f \n",old.S, old.I, old.R, old.V);
-
+        rungeKuttaStep(old, SIR_P, old, h);
     }
     return;
 }
@@ -172,7 +173,7 @@ void ohneGegenmassnahmen(double alpha, double beta, double delta, double gamma, 
 Nun erlauben wir nicht-pharmazeutische Maßnahmen, die $R_0$ reduzieren, und nehmen an, dass Impfungen vorgenommen werden. Naturlich ist $\Gamma (t)$ nach oben beschränkt durch $S(t)$.Wir nehmen an, dass $\gamma(t)$ Personen pro Zeit geimpft werden können. Dementsprechend gilt:
 $$\Gamma (t)=min[\gamma (t), S(t)]$$
 Geimpfte können mit Rate $\delta$ wieder infiziert werden. $\delta$ ist ungefähr von der Größenordnung von einigen inversen Monaten. Wir nehmen hier an:
-$$\frac{1}{\delta}}=150\enspace Tage$$ 
+$$\frac{1}{\delta}=150\enspace Tage$$ 
 Nun wird mit den realen Zahlen $S,I,R,V,\gamma (t)$ vom 1. Januar bis erstem Juni der restliche Pandemieverlauf für 2021 simuliert.Für die Zukunft wird $\gamma (t)$ konstant auf den letzten bekannten Wert gesetzt.$R_0$ wird so angepasst, dass die Simulation möglichst realistisch den bisherigen
 tatsächlichen Verlauf wiedergibt.
 
