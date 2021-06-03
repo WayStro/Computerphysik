@@ -2,7 +2,9 @@
 title: "Pandemieausbreitung"
 author: "Wayne Ströbel, Silas Müller"
 date: "5/30/2021"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -12,3 +14,93 @@ library(reticulate)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Pandemieausbreitung
+
+Wir betrachten eine leicht generalisierte Form des sogenannten SIR Modells. Das SIR Modell ist ein einfaches Modell um Pandemien zu beschreiben. S steht für susceptible, I für infected und R für recovered. S, I und R bezeichnen also jeweils die Anzahl an Personen. Außerdem beschreibt V die Anzahl an geimpften Personen. Die Zeitentwicklung dieser Größen wird durch folgende gekoppelte,
+gewöhnliche Differentialgleichungen beschrieben, die im folgenden unter Gesichtspunkten gelöst werden.
+
+# Differentialgleichungen
+
+\begin{equation}
+      S'(t) = -\frac{\beta}{N}S(t)I(t) -\Gamma(t)+ \delta V(t)
+\end{equation}
+
+\begin{equation}
+      I'(t) = \frac{\beta}{N}S(t)I(t) -\alpha I(t)
+\end{equation}
+
+\begin{equation}
+      R'(t) = \alpha I(t)
+\end{equation}
+
+\begin{equation}
+      V'(t) = \Gamma(t) - \delta V(t)
+\end{equation}
+N ist die Größe der Population und die Zeit wird in Tagen gerechnet.
+Das Verhältnis $R_0=\frac{\beta}{\alpha}$ ist die sogenannte Basisreproduktionszahl. Fur SARS-CoV-2 ist $R_0 \approx 2.9$ (0hne Maßnahmen), $\alpha$ ist ungefähr die inverse Zeit, die Infizierte ansteckend sind, also $\frac{1}{\alpha}=7$ Tage für SARS-CoV-2.
+
+# Lösungsverfahren: Runge-Kutta 2
+
+Das Lösen von Differentialgleichungen kann letzlich auf ein Integrationsproblem zurückgeführt werden, wenn die entsprechenden Anfangswerte bekannt sind. Dabei gilt: $x_{i}=x(t_i)$
+Zunächst betrachte man nur: $$\dot{x}(t)=f(t,x(t))$$
+Nun werden die Zeitschritte $t$ diskretisiert:
+\begin{equation}
+t_i=a+ih\enspace i=0,1,2,...,n \enspace und \enspace h=\frac{b-a}{n}
+\end{equation}
+Nun hat muss man das Integrationsproblem lösen:
+\begin{equation}
+x_{i+1}=x_i+\int_{t_i}^{t_{i+1}}f(t',x(t'))\,dt'
+\end{equation}
+Die einfachste Möglichkeit ist das Euler-Verfahren, wir nutzen hier jedoch das RK-2-Verfahren, was in der Vorlesung genauer vorgestellt wurde:
+\begin{equation}
+x{i+1}=x_i+\frac{h}{2}(f(t_i,x_i)+f(t_i+h,x_i+hf(t_i,x_i)))
+\end{equation}
+Dieses Verfahren leifert einen Fehler der Ordnung $O(h^3)$ und wird im folgenden genutzt.
+
+# Neue Krankheit: DGL ohne Gegenaßnahmen
+
+Zunächst wird für eine neue Krankheit (also $R(0)=0$) mit $\frac{1}{\alpha}=7$ und $\Gamma=\gamma=0$, sowie der Gesamtbevölkerung Deutschlands $N=8.3 \cdot 10^7$, den Anteil an der Gesamtbevölkerung bestimmt, der infiziert wurde, bis die Krankheit abklingt ($I(t)<1$), als Funktion von $R_0 \in [1,20]$.
+Dabei sollen folgende Anfangsbedingungen gelten:
+$$S(0)=N-5000,\enspace I(0)=5000,\enspace R(0)=V(0)=0$$
+Das Ergebnis soll mit der üblicherweise angegebenen Herdenimmunität $$\frac{S}{N}=\frac{1}{R_0}$$ verglichen und die Diskrepanz erklärt werden.
+
+## Anwendung von RK 2
+Im folgenden Code wird das Vefahren angewendet. Dabei ist zu beachten, dass die jeweiligen Funktionen $f(t,x(t))$ nicht explizit von der Zeit abhängen, sodass sich jweils Rekursionen der Art $x_{i+1}=F(x_i,y_i)$ ergeben.
+Also explizit:
+\begin{equation}
+f(t_i,s_i)=-\alpha \frac{R_0}{N}I(t_i)s_i
+\end{equation}
+\begin{equation}
+f(t_i,I_i)=\alpha \frac{R_0}{N}S(t_i)I_i-\alpha I_i
+\end{equation}
+## Code
+
+## Erläuterung des Codes
+
+## Ergebnis PLOTS ?
+
+# Simulation des Pandemieverlaufs: DGL mit Gegenmaßnahmen
+Nun erlauben wir nicht-pharmazeutische Maßnahmen, die $R_0$ reduzieren, und nehmen an, dass Impfungen vorgenommen werden. Naturlich ist $\Gamma (t)$ nach oben beschränkt durch $S(t)$.Wir nehmen an, dass $\gamma(t)$ Personen pro Zeit geimpft werden können. Dementsprechend gilt:
+$$\Gamma (t)=min[\gamma (t), S(t)]$$
+Geimpfte können mit Rate $\delta$ wieder infiziert werden. $\delta$ ist ungefähr von der Größenordnung von einigen inversen Monaten. Wir nehmen hier an:
+$$\frac{1}{\delta}}=150\enspace Tage$$ 
+Nun wird mit den realen Zahlen $S,I,R,V,\gamma (t)$ vom 1. Januar bis erstem Juni der restliche Pandemieverlauf für 2021 simuliert.Für die Zukunft wird $\gamma (t)$ konstant auf den letzten bekannten Wert gesetzt.$R_0$ wird so angepasst, dass die Simulation möglichst realistisch den bisherigen
+tatsächlichen Verlauf wiedergibt.
+
+## Daten
+
+## Code
+
+## Plots und Erläuterung
+
+#Vergleich mit hypothetischem Verlauf
+Die obige Simulation wird mit folgendem hypothetischem Verlauf verglichen: \newline
+Ab Mitte Januar wird der $R_0$-Wert so lange auf 0.5 gesenkt, bis I < 10000 gilt und anschließend wird $R_0$=1.2 gehalten. Ab Anfang Mai sinkt die Reproduktionszahl wegen saisonaler Effekte auf 80% dieses Wertes.
+
+## Code
+
+## Plots und Erläuterung
+
+## Vergleich
+
+#Fazit
