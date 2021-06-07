@@ -349,7 +349,7 @@ Nun können wir die $R_0$ Werte der Zeiträume so anpassen, dass wir einen Verla
 # Sorry :C
 
 #Schrittweite
-h1 <- 1
+h1 <- 0.05
 
 
 #Simulationen für bestimmte Zeiträume
@@ -364,35 +364,80 @@ t1 <- unlist(List[1])
 #29.1 bis 26.2
 List <- Simulation(1./7.,0.86/7.,1./150.,43878,8.3e7,238200, 1898900, 416646, h1, 28)
 
-I1 <- append(I ,unlist(List[3]))
-t1 <- append(t ,unlist(List[1]) + 25)
+I1 <- append(I1 ,unlist(List[3]))
+t1 <- append(t1 ,unlist(List[1]) + 25)
 
 #26.2 bis 31.3   MIT ANPASSUNG VON R_0
 List <- Simulation(1./7.,1.195/7.,1./150.,42536,8.3e7,119400, 2235700, 1971043, h1, 33)
 
-I1 <- append(I ,unlist(List[3]))
-t1 <- append(t ,unlist(List[1]) + 25 + 28)
+I1 <- append(I1 ,unlist(List[3]))
+t1 <- append(t1 ,unlist(List[1]) + 25 + 28)
 
 #31.3 bis 30.4  MIT ANPASSUNG VON R_0
 List <- Simulation(1./7.,1.21/7.,1./150.,90070,8.3e7,210700, 2521800, 4059489, h1, 30)
 
-I1 <- append(I ,unlist(List[3]))
-t1 <- append(t ,unlist(List[1]) + 25 + 28 + 33)
+I1 <- append(I1 ,unlist(List[3]))
+t1 <- append(t1 ,unlist(List[1]) + 25 + 28 + 33)
 
 #30.4 bis 31.5
 List <- Simulation(1./7.,0.88/7.,1./150.,126674,8.3e7,303600, 2995200, 6381397, h1, 31)
 
-I1 <- append(I ,unlist(List[3]))
-t1 <- append(t ,unlist(List[1]) + 25 + 28 + 33 + 30)
+I1 <- append(I1 ,unlist(List[3]))
+t1 <- append(t1 ,unlist(List[1]) + 25 + 28 + 33 + 30)
 
 #31.5 bis zur Abklingung der Krankheit
 List <- Simulation(1./7.,0.77/7.,1./150.,172147,8.3e7,106000, 3485700, 14615052, h1, 200)
 
-I1 <- append(I ,unlist(List[3]))
-t1 <- append(t ,unlist(List[1]) + 25 + 28 + 33 + 30 + 31)
+I1 <- append(I1 ,unlist(List[3]))
+t1 <- append(t1 ,unlist(List[1]) + 25 + 28 + 33 + 30 + 31)
 
 
-plot(unlist(t1), unlist(I1),
+
+#Schrittweite
+h2 <- 4
+
+#Simulationen für bestimmte Zeiträume
+
+
+#4.1 bis 29.1
+List <- Simulation(1./7.,0.925/7.,1./150.,0,8.3e7,339700, 1401200, 0, h2, 25)
+
+I2 <- unlist(List[3])
+t2 <- unlist(List[1])
+
+#29.1 bis 26.2
+List <- Simulation(1./7.,0.86/7.,1./150.,43878,8.3e7,238200, 1898900, 416646, h2, 28)
+
+I2 <- append(I2 ,unlist(List[3]))
+t2 <- append(t2 ,unlist(List[1]) + 25)
+
+#26.2 bis 31.3   MIT ANPASSUNG VON R_0
+List <- Simulation(1./7.,1.195/7.,1./150.,42536,8.3e7,119400, 2235700, 1971043, h2, 33)
+
+I2 <- append(I2 ,unlist(List[3]))
+t2 <- append(t2 ,unlist(List[1]) + 25 + 28)
+
+#31.3 bis 30.4  MIT ANPASSUNG VON R_0
+List <- Simulation(1./7.,1.21/7.,1./150.,90070,8.3e7,210700, 2521800, 4059489, h2, 30)
+
+I2 <- append(I2 ,unlist(List[3]))
+t2 <- append(t2 ,unlist(List[1]) + 25 + 28 + 33)
+
+#30.4 bis 31.5
+List <- Simulation(1./7.,0.88/7.,1./150.,126674,8.3e7,303600, 2995200, 6381397, h2, 31)
+
+I2 <- append(I2 ,unlist(List[3]))
+t2 <- append(t2 ,unlist(List[1]) + 25 + 28 + 33 + 30)
+
+#31.5 bis zur Abklingung der Krankheit
+List <- Simulation(1./7.,0.77/7.,1./150.,172147,8.3e7,106000, 3485700, 14615052, h2, 200)
+
+I2 <- append(I2 ,unlist(List[3]))
+t2 <- append(t2 ,unlist(List[1]) + 25 + 28 + 33 + 30 + 31)
+
+
+
+plot(t1, I1,
      main="Simulation 2",
      ylab="Anzahl",
      xlab="Zeit in [t]",
@@ -400,9 +445,9 @@ plot(unlist(t1), unlist(I1),
      xlim=c(0,365),
      type="l",
      col="red")
-#lines(t2, I2, col="green")
-legend("right", c("h = 0.5","h = 2")) 
-       fill=c("red","green")
+lines(t2, I2, col="green")
+legend("right", c("h = 0.5","h = 2"), 
+       fill=c("red","green"))
 ```
 
 # Vergleich mit hypothetischem Verlauf
