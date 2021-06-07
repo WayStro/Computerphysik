@@ -128,7 +128,7 @@ void rungeKuttaStep(Status oldStatus, Parameter parameter, Status& newStatus, do
 
 //[[Rcpp::export]]
 Rcpp::List Simulation(double alpha, double beta, double delta, 
-    double gamma, double N, double I0, double R0, double V0, double h)
+    double gamma, double N, double I0, double R0, double V0, double h, double max)
 {
 
     Rcpp::NumericVector t(1);
@@ -148,7 +148,7 @@ Rcpp::List Simulation(double alpha, double beta, double delta,
     
     //Anfangswerte
     Status old;
-    old.S = SIR_P.N - I0;
+    old.S = SIR_P.N - I0 - R0 - V0;
     old.I = I0;
     old.R = R0;
     old.V = V0;
@@ -163,11 +163,30 @@ Rcpp::List Simulation(double alpha, double beta, double delta,
     //Laufvariable, wichtig zum Interpretieren der Zeit
     double i = 0;
     
+    
+    if (max == 0) {
+    // max = 0 entspricht keiner Obergrenze
     // Laufende Schleife, bricht ab sobald infizierte unter 1 läuft
     // h beschreibt die Schritteweite in Tagen.
     //(z.B. h=0.5 entspricht einer Schrittweite von 12 Stunden)
     while (old.I > 1)
-    {
+      {
+          rungeKuttaStep(old, SIR_P, old, h);
+          i += h;
+          t.push_back(i);
+          Su.push_back(old.S);
+          In.push_back(old.I);
+          Re.push_back(old.R);
+          Va.push_back(old.V);
+      }
+    }
+    
+    
+    else {
+    // falls ein höchster Tag angegeben wurde, bricht der Code
+    // nach dem max-ten Tag ab
+      while (old.I > 1 && i <= max){
+      
         rungeKuttaStep(old, SIR_P, old, h);
         i += h;
         t.push_back(i);
@@ -175,8 +194,9 @@ Rcpp::List Simulation(double alpha, double beta, double delta,
         In.push_back(old.I);
         Re.push_back(old.R);
         Va.push_back(old.V);
-    }
     
+      }
+    }
     //Schreibt Vectoren der Werte in Liste, welche an R weitergegeben wird
     Rcpp::List L = Rcpp::List::create(t, Su, In, Re, Va);
     
@@ -184,14 +204,6 @@ Rcpp::List Simulation(double alpha, double beta, double delta,
 }
 
 ```
-
-
-## Erläuterung des Codes
-
-
-
-
-
 
 # Neue Krankheit: DGL ohne Gegenmaßnahmen
 
@@ -222,8 +234,9 @@ N <- 8.3e7
 #Initialisierung für %
 v <- rep(0, 20)
 
+#Ausführung des Verfahrens für verscheidene R_0
 for (i in R_0) {
-List <- Simulation(1./7.,i/7.,0,0,N,5000, 0, 0, 0.25)
+List <- Simulation(1./7.,i/7.,0,0,N,5000, 0, 0, 0.25, 0)
 R <- unlist(List[4])
 v[i] <- tail(R, n=1) / N
 }
@@ -252,36 +265,147 @@ Nun wird mit den realen Zahlen $S,I,R,V,\gamma (t)$ vom 1. Januar bis erstem Jun
 tatsächlichen Verlauf wiedergibt.
 
 ## Daten
+Zum Plotten benutzen wir die folgenden Daten:
+
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{c|c|c|c|c|c}
+  
+  Datum & Infizierte  & Geimpft & Geimpfte pro Zeit & $R_0$ \\
+  4.1 & 339700  & 0 & 0 & 0.98\\
+  29.1 & 238200 & 416646 & 43878 & 0.89 \\
+  26.2 & 119400 & 1971043 & 42536 & 1 \\
+  31.3 & 210700 & 4059489 & 90070 & 0.96 \\
+  30.4 & 303600 & 6381397 & 126674 & 0.88 \\
+  31.5 & 106000 & 14615052 & 172147 & 0.77 \\
+  
+  \end{tabular}
+  \caption{Daten des RKI für Covid Verlauf von 2021}
+\end{table}
+
+Mit diesen Daten können wir nun den Verlauf Simulieren und Plotten.
 
 ## Code
 ```{r}
+#Schrittweite
+h <- 0.25
 
-List <- Simulation(1./7.,2.9/7.,0,0,8.3e7,5000, 0, 0, 0.01)
+#Simulationen für bestimmte Zeiträume
 
-t <- unlist(List[1])
-S <- unlist(List[2])
-I <- unlist(List[3])
-R <- unlist(List[4])
-V <- unlist(List[5])
+
+#4.1 bis 29.1
+hStep1 <- Simulation(1./7.,0.98/7.,1./150.,0,8.3e7,339700, 1401200, 0, h, 25)
+
+I <- unlist(hStep1[3])
+t <- unlist(hStep1[1])
+
+#29.1 bis 26.2
+hStep2 <- Simulation(1./7.,0.89/7.,1./150.,43878,8.3e7,238200, 1898900, 416646, h, 28)
+
+I <- append(I ,unlist(hStep2[3]))
+t <- append(t ,unlist(hStep2[1]) + 25)
+
+#26.2 bis 31.3   MIT ANPASSUNG VON R_0
+hStep3 <- Simulation(1./7.,1/7.,1./150.,42536,8.3e7,119400, 2235700, 1971043, h, 33)
+
+I <- append(I ,unlist(hStep3[3]))
+t <- append(t ,unlist(hStep3[1]) + 25 + 28)
+
+#31.3 bis 30.4  MIT ANPASSUNG VON R_0
+hStep4 <- Simulation(1./7.,0.96/7.,1./150.,90070,8.3e7,210700, 2521800, 4059489, h, 30)
+
+I <- append(I ,unlist(hStep4[3]))
+t <- append(t ,unlist(hStep4[1]) + 25 + 28 + 33)
+
+#30.4 bis 31.5
+hStep5 <- Simulation(1./7.,0.88/7.,1./150.,126674,8.3e7,303600, 2995200, 6381397, h, 31)
+
+I <- append(I ,unlist(hStep5[3]))
+t <- append(t ,unlist(hStep5[1]) + 25 + 28 + 33 + 30)
+
+#31.5 bis zur Abklingung der Krankheit
+hStep6 <- Simulation(1./7.,0.77/7.,1./150.,172147,8.3e7,106000, 3485700, 14615052, h, 200)
+
+I <- append(I ,unlist(hStep6[3]))
+t <- append(t ,unlist(hStep6[1]) + 25 + 28 + 33 + 30 + 31)
 ```
 ## Plots und Erläuterung
 ```{r}
-plot(t, S,
+plot(t, I,
      main="Simulation 1",
      ylab="Anzahl",
      xlab="Zeit in [t]",
-     col="blue",
-     type="l")
-lines(t, I, col="red")
-lines(t, R, col="green")
-lines(t, V, col="purple")
-legend("right", c("Succeptible","Infected","Recovered","Vacinated"),
-       fill=c("blue","red","green","purple"))
-
-
+     ylim=c(0,5e5),
+     type="l",
+     col="red")
+legend("right", c("Infected"), fill=c("red"))
 ```
 
-#Vergleich mit hypothetischem Verlauf
+Nun können wir die $R_0$ Werte der Zeiträume so anpassen, dass wir einen Verlauf erhalten, der besser dem Realen Verlauf beschreibt:
+
+```{r}
+#Dieser Code ist sehr unschön, leider haben wir keinen anderen Weg gefunden, das ganze
+#besser aufzuschreiben, ohne einen großteil der vorherigen Funktionen umzuschreiben
+# Sorry :C
+
+#Schrittweite
+h1 <- 1
+
+
+#Simulationen für bestimmte Zeiträume
+
+
+#4.1 bis 29.1
+List <- Simulation(1./7.,0.925/7.,1./150.,0,8.3e7,339700, 1401200, 0, h1, 25)
+
+I1 <- unlist(List[3])
+t1 <- unlist(List[1])
+
+#29.1 bis 26.2
+List <- Simulation(1./7.,0.86/7.,1./150.,43878,8.3e7,238200, 1898900, 416646, h1, 28)
+
+I1 <- append(I ,unlist(List[3]))
+t1 <- append(t ,unlist(List[1]) + 25)
+
+#26.2 bis 31.3   MIT ANPASSUNG VON R_0
+List <- Simulation(1./7.,1.195/7.,1./150.,42536,8.3e7,119400, 2235700, 1971043, h1, 33)
+
+I1 <- append(I ,unlist(List[3]))
+t1 <- append(t ,unlist(List[1]) + 25 + 28)
+
+#31.3 bis 30.4  MIT ANPASSUNG VON R_0
+List <- Simulation(1./7.,1.21/7.,1./150.,90070,8.3e7,210700, 2521800, 4059489, h1, 30)
+
+I1 <- append(I ,unlist(List[3]))
+t1 <- append(t ,unlist(List[1]) + 25 + 28 + 33)
+
+#30.4 bis 31.5
+List <- Simulation(1./7.,0.88/7.,1./150.,126674,8.3e7,303600, 2995200, 6381397, h1, 31)
+
+I1 <- append(I ,unlist(List[3]))
+t1 <- append(t ,unlist(List[1]) + 25 + 28 + 33 + 30)
+
+#31.5 bis zur Abklingung der Krankheit
+List <- Simulation(1./7.,0.77/7.,1./150.,172147,8.3e7,106000, 3485700, 14615052, h1, 200)
+
+I1 <- append(I ,unlist(List[3]))
+t1 <- append(t ,unlist(List[1]) + 25 + 28 + 33 + 30 + 31)
+
+
+plot(unlist(t1), unlist(I1),
+     main="Simulation 2",
+     ylab="Anzahl",
+     xlab="Zeit in [t]",
+     ylim=c(0,5e5),
+     xlim=c(0,365),
+     type="l",
+     col="red")
+#lines(t2, I2, col="green")
+legend("right", c("h = 0.5","h = 2")) 
+       fill=c("red","green")
+```
+
+# Vergleich mit hypothetischem Verlauf
 Die obige Simulation wird mit folgendem hypothetischem Verlauf verglichen: \newline
 Ab Mitte Januar wird der $R_0$-Wert so lange auf 0.5 gesenkt, bis I < 10000 gilt und anschließend wird $R_0$=1.2 gehalten. Ab Anfang Mai sinkt die Reproduktionszahl wegen saisonaler Effekte auf 80% dieses Wertes.
 
@@ -291,4 +415,4 @@ Ab Mitte Januar wird der $R_0$-Wert so lange auf 0.5 gesenkt, bis I < 10000 gilt
 
 ## Vergleich
 
-#Fazit
+# Fazit
