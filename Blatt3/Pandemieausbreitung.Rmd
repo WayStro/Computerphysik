@@ -260,7 +260,7 @@ v[i] <- tail(R, n=1) / N
 ## Ergebnis
 
 Wir plotten den relativen Anteil der Bevölkerung, die das Virus besiegt haben muss, bis die Krankheit abgklingt, gegen $R_0$.
-Für unsere Krankheit mit $R_0\approx2.9$ liefert die Simulation einen Anteil von WERT. Vergleicht man dies mit dem erwarteten Wert von $1-\frac{1}{R_0}\approx 0.655$
+Für unsere Krankheit mit $R_0\approx2.9$ liefert die Simulation einen Anteil von $\approx$ `r v[3]` Vergleicht man dies mit dem erwarteten Wert von $1-\frac{1}{R_0}\approx 0.655$
 So stellt sich doch eine deutliche Diskrepanz dar. Dabei ist zu beachten, dass diese Simulation keine Tode berücksichtigt. Außerdem ist der R-Wert nur grob angegeben und eine Veränderung dessen während der Pandemie wird ignoriert. Die Fehler des Verfahrens sollten, wie bereits erwähnt, nicht annähernd in dieser Größenordnung liegen.
 
 ```{r}
@@ -542,18 +542,26 @@ Ein hypothetischer Pandemieverlauf konnte entsprechend simuliert und mit dem rea
 
 # Literatur
 
-1.Täglicher Lagebericht des RKI zur Coronavirus-Krankheit-2019 (COVID-19)
-https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Situationsberichte/Jan_2021/2021-01-29-de.pdf?__blob=publicationFile ,Stand 06.06.2021 \newline
-2.Täglicher Lagebericht des RKI zur Coronavirus-Krankheit-2019 (COVID-19)
-https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Situationsberichte/Feb_2021/2021-02-26-de.pdf?__blob=publicationFile ,Stand 06.06.2021 \newline
-3. Täglicher Lagebericht des RKI zur Coronavirus-Krankheit-2019 (COVID-19)
-https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Situationsberichte/Maerz_2021/2021-03-31-de.pdf?__blob=publicationFile ,Stand 06.06.2021 \newline
-4.Täglicher Lagebericht des RKI zur Coronavirus-Krankheit-2019 (COVID-19)
-https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Situationsberichte/Apr_2021/2021-04-30-de.pdf?__blob=publicationFile ,Stand 06.06.2021 \newline
-5. Täglicher Lagebericht des RKI zur Coronavirus-Krankheit-2019 (COVID-19)
-https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Situationsberichte/Mai_2021/2021-05-31-de.pdf?__blob=publicationFile ,Stand 06.06.2021 \newline
-6. Täglicher Lagebericht des RKI zur Coronavirus-Krankheit-2019 (COVID-19)
-https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Situationsberichte/Jan_2021/2021-01-04-de.pdf?__blob=publicationFile, Stand 07.06.2021 \newline
-7. Die wichtigsten Zahlen für Deutschland
-https://www.spiegel.de/wissenschaft/medizin/coronavirus-infizierte-genesene-tote-alle \newline
-8.Vorlesung zum Runge-Kutta Verfahren
+\textit{1.Täglicher Lagebericht des RKI zur Coronavirus-Krankheit-2019 (COVID-19)
+\url{https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Situationsberichte/Jan_2021/2021-01-29-de.pdf?__blob=publicationFile} ,Stand 06.06.2021} 
+
+\textit{2.Täglicher Lagebericht des RKI zur Coronavirus-Krankheit-2019 (COVID-19)
+\url{https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Situationsberichte/Feb_2021/2021-02-26-de.pdf?__blob=publicationFile} ,Stand 06.06.2021} 
+
+\textit{3.Täglicher Lagebericht des RKI zur Coronavirus-Krankheit-2019 (COVID-19)
+\url{https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Situationsberichte/Maerz_2021/2021-03-31-de.pdf?__blob=publicationFile} ,Stand 06.06.2021}
+
+\textit{4.Täglicher Lagebericht des RKI zur Coronavirus-Krankheit-2019 (COVID-19)
+\url{https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Situationsberichte/Apr_2021/2021-04-30-de.pdf?__blob=publicationFile} ,Stand 06.06.2021} 
+
+\textit{5.Täglicher Lagebericht des RKI zur Coronavirus-Krankheit-2019 (COVID-19)
+\url{https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Situationsberichte/Mai_2021/2021-05-31-de.pdf?__blob=publicationFile} ,Stand 06.06.2021} 
+
+\textit{6.Täglicher Lagebericht des RKI zur Coronavirus-Krankheit-2019 (COVID-19)
+\url{https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Situationsberichte/Jan_2021/2021-01-04-de.pdf?__blob=publicationFile}, Stand 07.06.2021} 
+
+\textit{7.Die wichtigsten Zahlen für Deutschland
+\url{https://www.spiegel.de/wissenschaft/medizin/coronavirus-infizierte-genesene-tote-alle}}
+
+\textit{8.Vorlesung zum Runge-Kutta Verfahren}
+
