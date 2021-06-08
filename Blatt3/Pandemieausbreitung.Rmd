@@ -258,6 +258,11 @@ v[i] <- tail(R, n=1) / N
 ```
 
 ## Ergebnis
+
+Wir plotten den relativen Anteil der Bevölkerung, die das Virus besiegt haben muss, bis die Krankheit abgklingt, gegen $R_0$.
+Für unsere Krankheit mit $R_0\approx2.9$ liefert die Simulation einen Anteil von WERT. Vergleicht man dies mit dem erwarteten Wert von $1-\frac{1}{R_0}\approx 0.655$
+So stellt sich doch eine deutliche Diskrepanz dar. Dabei ist zu beachten, dass diese Simulation keine Tode berücksichtigt. Außerdem ist der R-Wert nur grob angegeben und eine Veränderung dessen während der Pandemie wird ignoriert. Die Fehler des Verfahrens sollten, wie bereits erwähnt, nicht annähernd in dieser Größenordnung liegen.
+
 ```{r}
 
 #Plotten von R_0 gegen %
@@ -272,6 +277,7 @@ plot(R_0, v,
 
 
 # Simulation des Pandemieverlaufs: DGL mit Gegenmaßnahmen
+
 Nun erlauben wir nicht-pharmazeutische Maßnahmen, die $R_0$ reduzieren, und nehmen an, dass Impfungen vorgenommen werden. Naturlich ist $\Gamma (t)$ nach oben beschränkt durch $S(t)$.Wir nehmen an, dass $\gamma(t)$ Personen pro Zeit geimpft werden können. Dementsprechend gilt:
 $$\Gamma (t)=min[\gamma (t), S(t)]$$
 Geimpfte können mit Rate $\delta$ wieder infiziert werden. $\delta$ ist ungefähr von der Größenordnung von einigen inversen Monaten. Wir nehmen hier an:
@@ -299,6 +305,7 @@ Zum Plotten benutzen wir die folgenden Daten:
 \end{table}
 
 Mit diesen Daten können wir nun den Verlauf Simulieren und Plotten.
+
 
 ## Code
 ```{r}
@@ -344,7 +351,9 @@ hStep6 <- Simulation(1./7.,0.77/7.,1./150.,172147,8.3e7,106000, 3485700, 1461505
 I <- append(I ,unlist(hStep6[3]))
 t <- append(t ,unlist(hStep6[1]) + 25 + 28 + 33 + 30 + 31)
 ```
+
 ## Plots und Erläuterung
+
 ```{r}
 plot(t, I,
      main="Simulation 1",
@@ -356,7 +365,8 @@ plot(t, I,
 legend("right", c("Infected"), fill=c("red"))
 ```
 
-Nun können wir die $R_0$ Werte der Zeiträume so anpassen, dass wir einen Verlauf erhalten, der besser dem Realen Verlauf beschreibt:
+Nun können wir die $R_0$ Werte der Zeiträume so anpassen, dass wir einen Verlauf erhalten, der besser dem Realen Verlauf beschreibt:\newline
+Des Weiteren führen wir den Code mit verschiedenen Größen h durch, um die Unterschiede zu diskutieren.
 
 ```{r}
 #Dieser Code ist sehr unschön, leider haben wir keinen anderen Weg gefunden, das ganze
@@ -465,7 +475,10 @@ legend("right", c("h = 0.05","h = 1"),
        fill=c("red","green"))
 ```
 
+Wir erkennen allgemein nur sehr kleine Abweichungen für verschiedene h. Es ist jedoch gut zu erkennen (gerade am Ende des jeweiligen Simulationsabschnitts), dass ein größeres h zu einer größeren Schrittweite und so zu einer ungenaueren Prognose führt.
+
 # Vergleich mit hypothetischem Verlauf
+
 Die obige Simulation wird mit folgendem hypothetischem Verlauf verglichen: \newline
 Ab Mitte Januar wird der $R_0$-Wert so lange auf 0.5 gesenkt, bis I < 10000 gilt und anschließend wird $R_0$=1.2 gehalten. Ab Anfang Mai sinkt die Reproduktionszahl wegen saisonaler Effekte auf 80% dieses Wertes.
 
@@ -515,10 +528,32 @@ legend("right", c("Infizierte"),
        fill=c("red"))
 ```
 
+## Erläuterungen und Vergleich
 
-
-## Plots und Erläuterung
-test
-## Vergleich
+Betrachtet man den hypothetischen Verlauf, so lässt sich erkennen, dass durch die starke Senkung des R-Wertes am Anfang (bis I<10000), die Pandemie gebrochen scheint. So kann selbst ein darauffolgender R-Wert von 1.2 nicht zu einer erneuten Welle führen.
 
 # Fazit
+
+Durch das Runge-Kutta-Verfahren konnte das SIR-Modell gut modelliert und ein 
+Pandemieverlauf simuliert werden. Des Weiteren konnten die DGLs mit Gegenmaßnahmen ebenfalls numerisch genähert und dargestellt werden.\newline
+Hierbei ist zu erwähnen, dass nur fünf Phasen mit reellen Eckdaten simuliert wurden. Insbesondere eine tägliche Änderung des R-Wertes (z.B. durch Masken und Impfungen) konnte nicht gewährleist werden, was nur zu einem groben Simulation des reellen Verlaufs geführt hat.
+Kleine Schrittweiten stellten sich als insgesamt besser dar, da der Verlauf so besser beschrieben werden konnte (gerade wenn mehr reale Eckdaten gegeben sind). Natürlich verringert sich auch der Verfahrens-Fehler des Runge-Kutta-Verfahrens.\newline
+Ein hypothetischer Pandemieverlauf konnte entsprechend simuliert und mit dem realen Verlauf verglichen werden.
+
+# Literatur
+
+1.Täglicher Lagebericht des RKI zur Coronavirus-Krankheit-2019 (COVID-19)
+https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Situationsberichte/Jan_2021/2021-01-29-de.pdf?__blob=publicationFile ,Stand 06.06.2021 \newline
+2.Täglicher Lagebericht des RKI zur Coronavirus-Krankheit-2019 (COVID-19)
+https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Situationsberichte/Feb_2021/2021-02-26-de.pdf?__blob=publicationFile ,Stand 06.06.2021 \newline
+3. Täglicher Lagebericht des RKI zur Coronavirus-Krankheit-2019 (COVID-19)
+https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Situationsberichte/Maerz_2021/2021-03-31-de.pdf?__blob=publicationFile ,Stand 06.06.2021 \newline
+4.Täglicher Lagebericht des RKI zur Coronavirus-Krankheit-2019 (COVID-19)
+https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Situationsberichte/Apr_2021/2021-04-30-de.pdf?__blob=publicationFile ,Stand 06.06.2021 \newline
+5. Täglicher Lagebericht des RKI zur Coronavirus-Krankheit-2019 (COVID-19)
+https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Situationsberichte/Mai_2021/2021-05-31-de.pdf?__blob=publicationFile ,Stand 06.06.2021 \newline
+6. Täglicher Lagebericht des RKI zur Coronavirus-Krankheit-2019 (COVID-19)
+https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Situationsberichte/Jan_2021/2021-01-04-de.pdf?__blob=publicationFile, Stand 07.06.2021 \newline
+7. Die wichtigsten Zahlen für Deutschland
+https://www.spiegel.de/wissenschaft/medizin/coronavirus-infizierte-genesene-tote-alle \newline
+8.Vorlesung zum Runge-Kutta Verfahren
