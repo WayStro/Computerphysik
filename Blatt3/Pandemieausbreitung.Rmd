@@ -181,6 +181,21 @@ Rcpp::List Simulation(double alpha, double beta, double delta,
       }
     }
     
+    else if (max == -1){
+    //Sonderfall für letzte Aufgabe
+    while (old.I > 10000)
+      {
+          rungeKuttaStep(old, SIR_P, old, h);
+          i += h;
+          t.push_back(i);
+          Su.push_back(old.S);
+          In.push_back(old.I);
+          Re.push_back(old.R);
+          Va.push_back(old.V);
+      }
+    
+    
+    }
     
     else {
     // falls ein höchster Tag angegeben wurde, bricht der Code
@@ -394,7 +409,7 @@ t1 <- append(t1 ,unlist(List[1]) + 25 + 28 + 33 + 30 + 31)
 
 
 #Schrittweite
-h2 <- 4
+h2 <- 1
 
 #Simulationen für bestimmte Zeiträume
 
@@ -446,7 +461,7 @@ plot(t1, I1,
      type="l",
      col="red")
 lines(t2, I2, col="green")
-legend("right", c("h = 0.5","h = 2"), 
+legend("right", c("h = 0.05","h = 1"), 
        fill=c("red","green"))
 ```
 
@@ -456,8 +471,54 @@ Ab Mitte Januar wird der $R_0$-Wert so lange auf 0.5 gesenkt, bis I < 10000 gilt
 
 ## Code
 
-## Plots und Erläuterung
+```{r}
+#Schrittweite
+h <- 1
 
+#Simulationen für bestimmte Zeiträume
+
+
+#4.1 bis 15.1
+hStep1 <- Simulation(1./7.,0.98/7.,1./150.,0,8.3e7,339700, 1401200, 0, h, 11)
+
+I <- unlist(hStep1[3])
+t <- unlist(hStep1[1])
+
+#15.1 bis I<10000
+hStep2 <- Simulation(1./7.,0.5/7.,1./150.,0,8.3e7,tail(I, n=1), tail(unlist(hStep1[4]), n=1), 0, h, -1)
+
+I <- append(I, unlist(hStep2[3]))
+t <- append(t, unlist(hStep2[1]) + length(t)*h)
+
+#jetzt bis 1.5
+hStep3 <- Simulation(1./7.,1.2/7.,1./150.,0,8.3e7,tail(I, n=1), tail(unlist(hStep2[4]), n=1), 0, h, 119 - tail(t, n=1))
+
+I <- append(I, unlist(hStep3[3]))
+t <- append(t, unlist(hStep3[1]) + length(t)*h)
+
+#1.5 bis Ende
+hStep4 <- Simulation(1./7.,0.8*1.2/7.,1./150.,0,8.3e7,tail(I, n=1), tail(unlist(hStep3[4]), n=1), 0, h, 365 - tail(t, n=1))
+
+I <- append(I, unlist(hStep4[3]))
+t <- append(t, unlist(hStep4[1]) + length(t)*h)
+
+
+plot(t, I,
+     main="Hypothetischer Verlauf",
+     ylab="Anzahl",
+     xlab="Zeit in [t]",
+     ylim=c(0,5e5),
+     xlim=c(0,365),
+     type="l",
+     col="red")
+legend("right", c("Infizierte"), 
+       fill=c("red"))
+```
+
+
+
+## Plots und Erläuterung
+test
 ## Vergleich
 
 # Fazit
