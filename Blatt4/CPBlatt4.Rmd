@@ -1,0 +1,63 @@
+---
+title: 'Übungsblatt 4: Das Torkeln des Marsmondes Phobos'
+author: "Wayne Ströbel und Silas Müller"
+date: "21 6 2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Aufgabenstellung
+
+Der Marssatellit Phobos umkreist den Mars auf einer festen elliptischen Bahn mit Radius $r(t)$ und Polarwinkel $\phi (t)$ mit großer Halbachse $a$ und Exzentrizität $\epsilon$. Zusätzlich führt Phobos noch eine Eigenrotation in der Ebenen der Bewegung durch, die durch den Winkel $\vartheta (t)$ beschrieben wird. Der Satellit hat eine stark unsymmetrische Form, so dass seine drei Trägheitsmomente wie
+folgt betraglich geordnet sind $I_1 < I_2 < I_3$
+Da die Ellipse fest ist, kann die Bewegungsgleichung für $\vartheta (t)$ wie folgt geschrieben werden (siehe Vorlesung):\newline
+
+$$I_3  \ddot\vartheta (t)=-\frac{3}{2}(\frac{2 \pi}{T})^2(I_2-I_1)(\frac{a}{r(t)})^3\sin(2(\vartheta(t)-\phi(t))$$
+
+Dabei bezeichnet T die volle Umlaufzeit des Satelliten. Diese Gleichung hat formal nur einen Freiheitsgrad, über $r$ und $\phi$ gibt es aber eine implizite Zeitabhängigkeit.\newline
+Dazu wird zunächst die DGL genauer betrachtet, sowie eine Beziehung zwischen $r$ und $\phi$, sowie eine DGL für $\phi$ hergeleitet.\newline
+Abschließend werden die Ergebnisse in einer Poincaré Abbildung dargestellt, in der wir $\frac{T \dot \vartheta(t)}{2 \pi}$ gegen $\vartheta/)$ am Perihel der Satellitenbahn auftragen.Insbesondere sollen chaotische und (quasi-)periodische Bahnkurven miteinander verglichen werden.
+
+## Weitere Beziehungen und Differentialgleichungen
+
+Im folgenden gilt: $$\alpha^2=3\frac{I_2-I_1}{I_3} ,\enspace \epsilon=0.015$$
+Wandelt man die Ellipsengleichung in Polarkoordinaten um, vereinfacht und löst nach $r$ auf, so ergibt sich mit $p=\frac{b^2}{a}$, wobei a die große und b die kleine Halbachse der Ellipse darstellt:
+$$r=\frac{p}{1+\epsilon cos(\phi)}$$
+Des Weiteren gilt:
+$$\epsilon=\frac{\sqrt{a^2-b^2}}{a}\enspace also: \enspace p=a(1-\epsilon^2)$$
+Schreibt man nun r in Einheiten von a um: $\tilde{r}=\frac{r}{a}$
+$$\tilde{r}(t)=\frac{1-\epsilon^2}{1+\epsilon cos{\phi(t)}}$$
+WEITERE DGL FÜR PHI?
+ZEITTRAFO
+BLABLA 
+
+## Numerische Lösung der DGLs
+
+CODE
+
+
+## Poincare-Abbildungen für verschiedene Anfangswerte
+
+Es werden nun die oben beschriebenen Poincare-Abbildungen für verschiedene Anfangswerte dargestellt.
+
+### Für $\epsilon$=0
+
+PLOT
+BLABLA
+
+### Andere Anfangswerte
+
+PLOT
+BLABLA
+
+
+## Diskussion
+
+## Fazit
+
+## Literatur
+
+
