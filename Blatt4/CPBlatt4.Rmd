@@ -139,7 +139,11 @@ List Simulation(double a, double alpha, double T, double eps, double LM,
     {
     
         Teta.push_back(old.Teta);
+<<<<<<< HEAD
         Teta_Pri.push_back(old.Teta_pri*phobos.T / (2*M_PI));
+=======
+        Teta_Pri.push_back(old.Teta_pri);
+>>>>>>> 2e241a83a93c9f30dd0c1a368f5235ef7cab0e24
         
         k+=1;
     }
@@ -235,7 +239,11 @@ cols <- rainbow(length(Phi0)*length(Teta0)*length(Teta_Pri0))
 plot(0, 0,
      main="Kreis",
      xlim=c(0,pi),
+<<<<<<< HEAD
      ylim=c(-8,8),
+=======
+     ylim=c(-7,7),
+>>>>>>> 2e241a83a93c9f30dd0c1a368f5235ef7cab0e24
      xlab="Teta",
      ylab="Teta_dot",
      type="n")
