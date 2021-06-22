@@ -36,7 +36,120 @@ BLABLA
 
 ## Numerische Lösung der DGLs
 
-CODE
+```{Rcpp}
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+#include <algorithm>
+#include <Rcpp.h>
+
+
+using namespace Rcpp;
+
+
+typedef struct 
+{
+    double R,Phi,Phi_pri,Teta,Teta_pri;   //pri steht für Ableitung
+} Status;
+
+typedef struct 
+{
+    double eps, T, a, alpha, LM;
+} Parameter;
+
+//Definitionen für f-Funktionen zum Integrieren
+
+void f(Status oldStatus, Parameter parameter, Status& newStatus){
+
+    newStatus.Phi_pri = - 2 * parameter.eps * sin(oldStatus.Phi) / (1 + parameter.eps * cos(oldStatus.Phi)) * pow(oldStatus.Phi_pri, 2);
+    newStatus.Phi = oldStatus.Phi_pri;
+    newStatus.R = parameter.T * (1. - (parameter.eps * parameter.eps)) * parameter.eps * sin(oldStatus.Phi) / ( (1. + parameter.eps * cos(oldStatus.Phi)) * (1. + parameter.eps * cos(oldStatus.Phi))) * oldStatus.Phi_pri;
+    newStatus.Teta_pri = -1./2. * pow(2.* M_PI, 2) * pow(parameter.alpha, 2) * pow(1/oldStatus.R, 3) * sin(2.*(oldStatus.Teta - oldStatus.Phi));
+    newStatus.Teta = oldStatus.Teta_pri;
+
+    // printf("%.10f %.10f %.10f %.10f \n", newStatus.Phi, newStatus.R, newStatus.Teta_pri, newStatus.Teta);
+}
+
+
+//RungeKutta Schritt
+
+void RungeKutta(Status oldStatus, Parameter parameter, Status& newStatus, double h) {
+
+    Status f_i;
+    f(oldStatus, parameter, f_i);
+
+    //Definition für f(x_(i+1))
+    Status f_i1;
+
+    //Beschreibung zur Berechnung von f_i1
+    Status rechnung;
+    rechnung.Phi_pri = oldStatus.Phi_pri + h*f_i.Phi_pri;
+    rechnung.Phi = oldStatus.Phi + h*f_i.Phi;
+    rechnung.R = oldStatus.R + h*f_i.R;
+    rechnung.Teta_pri = oldStatus.Teta_pri + h*f_i.Teta_pri;
+    rechnung.Teta = oldStatus.Teta + h*f_i.Teta;   
+
+    f(rechnung, parameter, f_i1);
+
+    //Rechenschritt
+    newStatus.Phi_pri = oldStatus.Phi_pri + h/2. *(f_i.Phi_pri + f_i1.Phi_pri);
+    newStatus.Phi = oldStatus.Phi + h/2. * (f_i.Phi + f_i1.Phi);
+    newStatus.R = oldStatus.R + h/2. * (f_i.R + f_i1.R);
+    newStatus.Teta_pri = oldStatus.Teta_pri + h/2. * (f_i.Teta_pri + f_i1.Teta_pri);
+    newStatus.Teta = oldStatus.Teta + h/2. * (f_i.Teta + f_i1.Teta);
+
+}
+
+
+//[[Rcpp::export]]
+List Simulation(double a, double alpha, double T, double eps, double LM,
+                double Phi0, double Phi_pri0, double R0, double Teta0, double Teta_pri0,
+                double h, double Rounds){
+
+  
+  
+    NumericVector Teta(0);
+    NumericVector Teta_Pri(0);
+  
+  
+    //Definition der Parameter
+    Parameter phobos;
+    phobos.a = a;
+    phobos.alpha = alpha;
+    phobos.T = T;
+    phobos.eps = eps;
+    phobos.LM = LM;
+
+    
+    //Anfangswerte
+    Status old;
+    old.Phi = Phi0;
+    old.R = R0 - pow(phobos.eps, 2);
+    old.Teta = Teta0;
+    old.Teta_pri = Teta_pri0;
+    old.Phi_pri = Phi_pri0;
+    
+  
+    int k = 0;
+    for (double i = 0; i < Rounds ; i+=h)
+    {
+        RungeKutta(old, phobos, old, h);
+
+    if ((k+1)*M_PI*2 < old.Phi)   //Prüft auf vielfache von 2*Pi von Phi
+    {
+    
+        Teta.push_back(old.Teta);
+        Teta_Pri.push_back(old.Teta_pri);
+        
+        k+=1;
+    }
+    }   
+    List L = List::create(Teta, Teta_Pri);
+    
+    return L;
+}
+
+```
 
 
 ## Poincare-Abbildungen für verschiedene Anfangswerte
@@ -45,13 +158,103 @@ Es werden nun die oben beschriebenen Poincare-Abbildungen für verschiedene Anfa
 
 ### Für $\epsilon$=0
 
-PLOT
-BLABLA
+```{r}
+
+#Parameter und Anfangswerte
+
+a <- 1.
+alpha <- 0.82
+T_um <- 7.33
+eps <- 0.
+LM <- 1.
+
+h <- 0.001
+Rounds <- 1000
+
+R0 <- 1.
+Phi0 <- 0.
+Teta0 <- 0.
+Phi_Pri0 <- 2*pi/T_um
+Teta_Pri0 <- 1.
+
+
+List <- Simulation(a, alpha, T_um, eps, LM, Phi0, Phi_Pri0, R0, Teta0, Teta_Pri0, h, Rounds)
+Teta <- unlist(List[1])
+Teta_Pri <- unlist(List[2])
+
+
+plot(Teta%%(pi), Teta_Pri,
+     main="Kreis",
+     xlab="Teta",
+     ylab="Teta_dot",
+     col="red",
+     type="p")
+```
+
 
 ### Andere Anfangswerte
 
-PLOT
-BLABLA
+```{r}
+
+#Parameter und Anfangswerte
+
+a <- 1.
+alpha <- 0.82
+T_um <- 7.33
+eps <- 0.015
+LM <- 1.
+
+h <- 0.001
+Rounds <- 1000
+
+R0 <- 1.
+Phi0 <- c(0,1)
+Teta0 <- c(0,1,5)
+Phi_Pri0 <- 2*pi/T_um
+Teta_Pri0 <- c(-3,-0.5, 1,3)
+
+#
+
+for (i in Teta_Pri0) {
+  for (j in Teta0) {
+    for (k in Phi0){
+      
+      name <- paste('',k,j,i,sep='')
+      
+      
+      List[[name]] <- Simulation(a, alpha, T_um, eps, LM, k, Phi_Pri0, R0, j, i, h, Rounds)
+      
+
+    }
+  }
+}
+
+var <- 1
+cols <- rainbow(length(Phi0)*length(Teta0)*length(Teta_Pri0))
+
+plot(0, 0,
+     main="Kreis",
+     xlim=c(0,pi),
+     ylim=c(-7,7),
+     xlab="Teta",
+     ylab="Teta_dot",
+     type="n")
+
+for (i in Teta_Pri0) {
+  for (j in Teta0) {
+    for (k in Phi0){
+      
+      name <- paste('',k,j,i,sep='')
+      
+      points(unlist(List[[name]][1])%%pi, unlist(List[[name]][2]), col=(cols[var]))
+      var <- var + 1
+      
+    }
+  }
+}
+
+
+```
 
 
 ## Diskussion
