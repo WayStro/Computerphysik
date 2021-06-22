@@ -23,16 +23,23 @@ Abschließend werden die Ergebnisse in einer Poincaré Abbildung dargestellt, in
 
 ## Weitere Beziehungen und Differentialgleichungen
 
-Im folgenden gilt: $$\alpha^2=3\frac{I_2-I_1}{I_3} ,\enspace \epsilon=0.015$$
+Im folgenden gilt: $$\alpha^2=3\frac{I_2-I_1}{I_3}=0.83^2 ,\enspace \epsilon=0.015$$
 Wandelt man die Ellipsengleichung in Polarkoordinaten um, vereinfacht und löst nach $r$ auf, so ergibt sich mit $p=\frac{b^2}{a}$, wobei a die große und b die kleine Halbachse der Ellipse darstellt:
 $$r=\frac{p}{1+\epsilon cos(\phi)}$$
 Des Weiteren gilt:
 $$\epsilon=\frac{\sqrt{a^2-b^2}}{a}\enspace also: \enspace p=a(1-\epsilon^2)$$
 Schreibt man nun r in Einheiten von a um: $\tilde{r}=\frac{r}{a}$
 $$\tilde{r}(t)=\frac{1-\epsilon^2}{1+\epsilon cos{\phi(t)}}$$
-WEITERE DGL FÜR PHI?
-ZEITTRAFO
-BLABLA 
+Wir wollen nun noch eine DGL für $\phi$ bestimmen. Dazu betrachten wir die Drehimpulserhaltung:
+$$\dot L=m \dot \omega r^2 +2m\omega r \dot r=0$$
+$$\Rightarrow m\ddot \phi \frac{p^2}{(1+\epsilon cos(\phi))^2}+2m\dot \phi \frac{p^2sin(\phi)\epsilon}{(1+\epsilon cos(\phi))^3} \dot \phi=0   $$
+$$\Rightarrow 0=\ddot \phi(t) + 2 \dot \phi^2(t)\epsilon\frac{sin(\phi)}{1+\epsilon cos(\phi)}$$
+Führt man jetzt noch eine Zeittransformation: $\tau=\frac{t}{T}$ ein, so gilt:
+
+$$\tilde{r}(\tau)=\frac{1-\epsilon^2}{1+\epsilon cos(\phi(\tau))}$$
+$$\ddot \phi(\tau)= -2 \dot \phi^2(\tau)\epsilon\frac{sin(\phi(\tau))}{1+\epsilon cos(\phi(\tau))}$$
+und abschließend:
+$$\ddot \vartheta(\tau)=-\frac{\pi^2}{2}\alpha^2 (\tilde{r}(\tau))^{-3}\sin(2(\vartheta(\tau)-\phi(\tau)) $$
 
 ## Numerische Lösung der DGLs
 
