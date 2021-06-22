@@ -162,9 +162,11 @@ List Simulation(double a, double alpha, double T, double eps, double LM,
 
 ## Poincare-Abbildungen für verschiedene Anfangswerte
 
-Es werden nun die oben beschriebenen Poincare-Abbildungen für verschiedene Anfangswerte dargestellt.
+Es werden nun die oben beschriebenen Poincare-Abbildungen für verschiedene Anfangswerte dargestellt. Bei allen Abbildungen wird $\vartheta\mod2\pi$ aufgetragen.
 
 ### Für $\epsilon$=0
+
+Bei $\epsilon=0$ handelt es sich um eine Kreisbahn (also konstantes $r(t)$) die Phobos um den Mars absolviert. Die Eigenrotation ist periodisch, also insbesondere nicht chaotisch. 
 
 ```{r}
 
@@ -200,7 +202,9 @@ plot(Teta%%(pi), Teta_Pri,
 ```
 
 
-### Andere Anfangswerte
+### verschiedene Anfangswerte für Phobos
+
+Wir wählen nun die realen Daten mit $\epsilon=0.015$. Phobos befindet sich nun also auf einer Ellipse um den Mars.
 
 ```{r}
 
@@ -267,8 +271,18 @@ for (i in Teta_Pri0) {
 
 ## Diskussion
 
+Wie man in den obigen Abbildungen erkennt, varriert die Eigenrotation von Phobos sehr stark bei einer geringen Veränderung der Anfangswerte. So lassen sich gut quasi periodische Eigenrotationen aber auch stark chaotische erkennen.\newline
+Die Stabilität des Verfahrens ist nur bei genügend kleiner Schrittweite (bei uns $h=0.001$) gut gegeben. Ist dies nicht der Fall wird das Verfahren sehr schnell instabil. Was man im folgenden sieht:
+
+CODECODECODE
+
 ## Fazit
+
+Wir konnten die gefordeten Tranformationen der DGL durchführen, sowie mittels Drehimpulserhaltung und den Ellipsengeleichungen einen Zusammenhang zwischen $r(t)$ und $\phi(t)$ herstellen und so eine DGL für $\phi(\tau)$ herleiten. Mit Hilfe dieser konnten wir das vollständige Systme der DGLs aufstellen und diese mittels Runge-Kutta lösen.  \newline
+Wie in der Vorlesung angedeutet, handelt es sich für bestimmte Anfangswerte um ein chaotisches System. Die Eigenrotation des Phobos kann daher nur für sehr bestimmte Anfangswerte periodisch beobachtet werden. \newline
+Die Stabilität unserer Verfahrens hängt stark von der Schrittweite ab. Für genügend kleine Schrittweite ist dies aber gewährleistet.
 
 ## Literatur
 
+\textit{Vorlesungskript, sowie Vorlesung vom 9.6.2021}
 
