@@ -1,5 +1,5 @@
 ---
-title: "Spektrum einer Klaviersaite"
+title: "Blatt 5: Spektrum einer Klaviersaite"
 author: "Wayne Ströbel, Silas Müller"
 date: "7/3/2021"
 output: pdf_document
@@ -8,6 +8,41 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+# Spektrum einer Klaviersaite
+
+Eine Klaviersaite der Länge $l=0.4m$ mit linearer Massenbelegung $\rho=0.0006 kg/m$ ist rechts und links fixiert und mit der Kraft $F=743.4N$ gespannt. Wir betrachten transversale Wellen in der Auslenkung $\psi(x,t)$ beschrieben durch die Wellengleichung:
+$$\frac{\partial^2\psi(x,t)}{\partial t^2}=c^2\frac{\partial^2\psi(x,t)}{\partial x^2}-\frac{\gamma}{l} \Biggl| \frac{\partial \psi(x,t)}{\partial t} \Biggl| \frac{\partial \psi(x,t)}{\partial t}$$
+mit $\gamma=1/3$. \newline
+Die Saite wird durch einen Hammer $\delta$-artig angeschlagen.\newline
+Es soll zunächst die Schwingung der Saite mit entsprechenden Anfangsbedingungen simuliert und anschließend das Spektrum der Saite vom Grundton bis zum fünften Oberton aus der simulierten Zeitentwicklung mittels Fourier Transformation bestimmt werden. Außerdem soll für den Spezialfall $\gamma=0$ überprüft werden, ob unsere Diskretisierungslängen eine stabile Simulation ermöglichen. Abschließend sollen die Amplituden der verschiedenen Frequenzen zeitlich aufgelöst und erläutert werden.
+
+# Simulation der Schwingung
+
+## Numerische Vorüberlegung
+
+Um die oben genannte Schwingung zu simulieren betrachten wir zunächst obige Differentialgleichung und transformieren in dimensionslose Koordinaten:
+$$\tau=\frac{t}{T},\enspace a=\frac{x}{l}, \enspace T=\frac{l}{c} \enspace, \phi=\psi l$$
+Daraus ergibt sich folgende dimensionslose DGL:
+$$\frac{\partial^2\phi(a,\tau)}{\partial \tau^2}=\frac{\partial^2\phi(a,\tau)}{\partial a^2}-\gamma \Biggl| \frac{\partial \phi(a,\tau)}{\partial \tau} \Biggl| \frac{\partial \phi(a,\tau)}{\partial \tau}$$
+Darauf wenden wir nun unsere bekannten numerische Approximationen an, im folgenden gelten die Abkürzungen: $U_{tt}=\frac{\partial^2\phi(a,\tau)}{\partial \tau^2}$, analog für $U_{xx}$ bzw. $U_{x}$ und $U_{t}$. Außerdem sei $U_{ij}=\phi(\tau_i,a_j)$.
+$$U_{tt}=\frac{U_{i+1,j}-2U_{i,j}+U_{i-1,j}}{h_t^2}$$
+$$U_{xx}=\frac{U_{i,j+1}-2U_{i,j}+U_{i,j-1}}{h_x^2}$$
+$$U_{t}=\frac{U_{i,j}-U_{i-1,j}}{h_t}$$
+Wobei $h_t$ und $h_x$ den jeweiligen Diskretisierungsgrößen entsprechen.\newline
+Nun setzt man obige Definitionen in die dimensionlose DGL ein und löst nach $U_{i+1,j}$ auf:
+$$U_{i+1,j}=\frac{h_t^2}{h_x^2}(U_{i,j+1}-2U_{i,j}+U_{i,j-1})-\gamma |U_{i,j}-U_{i-1,j}| (U_{i,j}-U_{i-1,j})+2U_{i,j}-U_{i-1,j}$$
+Mit Hilfe dieser Formel wollen wir nun für verschiedene Zeiten jeweils alle Ortskoordinaten ermitteln und das Problem so simulieren. Dabei ist zu erwähnen, dass die Simulation von dem Hammerschlag ausgeht und auf Grunde der Anfangswerte (für alle x außer am Hammerschlag):
+$$\frac{\partial\psi(x,t=0)}{\partial t}=0, \enspace \psi(x,0)=0$$ 
+gilt, dass wir zum Start $U_{0,0.26}=U_{0-1,0.26}=\frac{0.01m}{0.4m}$ wählen können.
+
+## Code
+
+CODE
+
+PLOTS
+
+# Spektrum der Saite
 
 
 
