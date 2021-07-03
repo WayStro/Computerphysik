@@ -38,9 +38,57 @@ gilt, dass wir zum Start $U_{0,0.26}=U_{0-1,0.26}=\frac{0.01m}{0.4m}$ w√§hlen k√
 
 ## Code
 
-CODE
+```{Rcpp}
+#include <stdio.h>
+#include <math.h>
+#include <Rcpp.h>
 
-PLOTS
+
+using namespace Rcpp;
+
+
+//[[Rcpp::export]]
+NumericMatrix Entwicklung(NumericMatrix u, int steps, double dxdt, int i, double gamma){
+
+  
+  
+    for (int j = 0; j < steps; j++)
+    {
+        u(i+1 , j) = dxdt * (u(i, j+1) - 2*u(i, j) + u(i, j-1)) + 2*u(i, j) - u(i-1, j) - gamma* abs(u(i, j) - u(i-1, j))*(u(i, j) -u(i-1, j));
+    }
+    
+    return u;
+}
+```
+
+
+
+
+```{r}
+strike <- 0.01
+l <- 0.4
+steps <- 100
+times <- 100
+dx <- 0.4*0.01
+dt <- 0.01
+gamma <- 1./3.
+
+dxdt <- dx^2/dt^2
+
+time <- c(2:100)
+
+mat <- matrix(0, nrow = times,ncol = steps)
+
+mat[2, 26] <- strike/l
+
+
+for (i in time){
+  Entwicklung(mat,steps,dxdt,i,gamma)
+}
+
+
+mat
+```
 
 # Spektrum der Saite
 
