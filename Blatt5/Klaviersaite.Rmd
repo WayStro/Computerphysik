@@ -38,6 +38,7 @@ gilt, dass wir zum Start $U_{0,0.26}=U_{0-1,0.26}=\frac{0.01m}{0.4m}$ wählen k�
 
 ## Code
 ```{r}
+library(latex2exp)
 #Anfangswerte und Zeit/Step Einstellungen
 strike = 0.01
 l = 0.4
@@ -64,13 +65,16 @@ u[1, 0.26*steps] <- strike/l
 #Simulation
 for (i in time){
   for (j in step){
+    
     u[i+1,j] = 1 / (1 + gamma * abs(u[i, j] - u[i-1, j])) * (dxdt  * (u[i, j+1] - 2*u[i, j] + u[i, j-1]) + 2*u[i, j] - u[i-1, j] + gamma * abs(u[i, j] - u[i-1, j]) * (u[i,j]))
+    
+    
   }
 }
 
 
 #Plot der örtlichen Werte zu verschiedenen Zeitpunkten
-plot(1:steps, u[2,], "l", col=rainbow(6)[1])
+plot(1:steps, u[2,], "l", col=rainbow(6)[1], main="Örtliche Auftragung für verschiedene Zeiten", xlab=TeX(r'($\frac{l}{x} * 1000$)'), ylab=TeX(r'($\phi$)'))
 lines(1:steps, u[100,], col=rainbow(6)[2])
 lines(1:steps, u[500,], col=rainbow(6)[3])
 lines(1:steps, u[1000,], col=rainbow(6)[4])
@@ -81,7 +85,7 @@ lines(1:steps, u[20000,], col=rainbow(6)[6])
 
 
 
-plot((1:times)*dt, u[,260], "l")
+plot((1:times)*dt, u[,260], "l", main="Zeitliche Auftragung für einen Ort", xlab=TeX(r'($\tau$)'), ylab=TeX(r'($\phi$)'))
 ```
 
 # Spektrum der Saite
@@ -92,6 +96,9 @@ plot((1:times)*dt, u[,260], "l")
 ## Code
 
 ```{r}
+
+
+#Koeffizient für Fouriertrafo
 koeff <- function(n,k){
   
   w = complex(real = cos(-2*pi*k/n), imaginary = sin(-2*pi*k/n))  
@@ -102,7 +109,7 @@ koeff <- function(n,k){
 
 
 
-
+#Fast Fourier Trafo
 FFT <- function(func, r){
   
   n = 2^r
@@ -115,7 +122,6 @@ FFT <- function(func, r){
         
         a = 2*k*m +j
         b = a + m
-        
         func[a] = func[a] + func[b]
         func[b] = koeff(n,Kap*j) * (func[a] - 2*func[b])
         
@@ -131,7 +137,7 @@ FFT <- function(func, r){
 
 
 
-
+#Sortierung der Werte der Fouriertrafo
 sort <- function(n, toSort){
   
   vec <- c(1: n)
@@ -156,31 +162,113 @@ sort <- function(n, toSort){
   }
   return(Sorted)
 }
-r = 9
+
+#Gegebene Werte
+
+Force = 743.4
+l = 0.4
+roh = 0.006
+
+#Ausbreitungsgeschwindigkeit
+c = 1/2 * sqrt(Force/roh)
+
+
+r = 14
 n = 2^r
 
-a_list <- list(sort(n, FFT(u[,200], r)))
+#Eintragen Fourier Trafo der Zeitlichen Entwicklung an verschiedenen Orten
+tmp <- sort(n, FFT(u[,245], r))
+a_list <- list(tmp)
 
 
-for (i in c(1:60)){
-  temp <- sort(n, FFT(u[,200+i], r))
+for (i in c(1:15)){
+  temp <- sort(n, FFT(u[,245+i], r))
   a_list <- c(a_list, list(temp))
 }
 
 
+#Plotten
+plot(seq(1, 20000, length.out=(2^r))* dt * c/l, Re(unlist(a_list[1])), "l", col="red", ylim=c(0,0.01), main="Zeitliche FFT für festen Ort", ylab="", xlab=TeX('($Hz$)'))
 
 
-plot(1/seq(0, times, length.out=2^r), Re(unlist(a_list[1])), "l", col="red", ylim=c(0.,0.02))
-
-
-for (i in c(1:60)){
+for (i in c(1:15)){
   
-  lines(1/seq(0, times, length.out=2^r), Re(unlist(a_list[1+i])), col=rainbow(length(c(1:60)))[i])
+  lines(seq(1, 20000, length.out=(2^r))* dt* c/l, Re(unlist(a_list[1+i])), col=rainbow(length(c(1:15)))[i])
   
 }
 
 
 ```
 
+# Ungedämpft
+
+
+
+## Simulation
+```{r, echo=FALSE}
+#Anfangswerte und Zeit/Step Einstellungen
+gamma2 = 0.
+
+
+#Auffüllen der Matrix mit Nullen
+u2 <- matrix(0.0, nrow = times,ncol = steps)
+
+#Startwerte einfügen
+u2[2, 0.26*steps] <- strike/l
+u2[1, 0.26*steps] <- strike/l
+
+
+#Simulation
+for (i in time){
+  for (j in step){
+    
+    u2[i+1,j] = 1 / (1 + gamma2 * abs(u2[i, j] - u2[i-1, j])) * (dxdt  * (u2[i, j+1] - 2*u2[i, j] + u2[i, j-1]) + 2*u2[i, j] - u2[i-1, j] + gamma2 * abs(u2[i, j] - u2[i-1, j]) * (u2[i,j]))
+    
+    
+  }
+}
+
+
+#Plot der örtlichen Werte zu verschiedenen Zeitpunkten
+plot(1:steps, u2[2,], "l", col=rainbow(6)[1], main="Örtliche Auftragung für verschiedene Zeiten", xlab=TeX(r'($\frac{l}{x} * 1000$)'), ylab=TeX(r'($\phi$)'))
+lines(1:steps, u2[100,], col=rainbow(6)[2])
+lines(1:steps, u2[500,], col=rainbow(6)[3])
+lines(1:steps, u2[1000,], col=rainbow(6)[4])
+lines(1:steps, u2[10000,], col=rainbow(6)[5])
+lines(1:steps, u2[20000,], col=rainbow(6)[6])
+
+
+
+
+
+plot((1:times)*dt, u2[,260], "l", main="Zeitliche Auftragung für einen Ort", xlab=TeX(r'($\tau$)'), ylab=TeX(r'($\phi$)'))
+```
+
+
+## Spektrum
+
+```{r, echo=FALSE}
+
+tmp <- sort(n, FFT(u2[,245], r))
+a_list2 <- list(tmp)
+
+
+for (i in c(1:15)){
+  temp <- sort(n, FFT(u2[,245+i], r))
+  a_list2 <- c(a_list, list(temp))
+}
+
+
+plot(seq(1, 20000, length.out=(2^r))* dt * c/l, Re(unlist(a_list2[1])), "l", col="red", ylim=c(0,0.01), main="Zeitliche FFT für festen Ort", ylab="", xlab=TeX('($Hz$)'))
+
+
+for (i in c(1:15)){
+  
+  lines(seq(1, 20000, length.out=(2^r))* dt* c/l, Re(unlist(a_list2[1+i])), col=rainbow(length(c(1:15)))[i])
+  
+}
+
+
+```
 
 
