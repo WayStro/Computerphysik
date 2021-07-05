@@ -9,7 +9,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Spektrum einer Klaviersaite
+# Aufgabenstellung
 
 Eine Klaviersaite der Länge $l=0.4m$ mit linearer Massenbelegung $\rho=0.0006 kg/m$ ist rechts und links fixiert und mit der Kraft $F=743.4N$ gespannt. Wir betrachten transversale Wellen in der Auslenkung $\psi(x,t)$ beschrieben durch die Wellengleichung:
 $$\frac{\partial^2\psi(x,t)}{\partial t^2}=c^2\frac{\partial^2\psi(x,t)}{\partial x^2}-\frac{\gamma}{l} \Biggl| \frac{\partial \psi(x,t)}{\partial t} \Biggl| \frac{\partial \psi(x,t)}{\partial t}$$
@@ -30,8 +30,7 @@ $$U_{tt}=\frac{U_{i+1,j}-2U_{i,j}+U_{i-1,j}}{h_t^2}$$
 $$U_{xx}=\frac{U_{i,j+1}-2U_{i,j}+U_{i,j-1}}{h_x^2}$$
 $$U_{t}=\frac{U_{i,j}-U_{i-1,j}}{h_t}$$
 Wobei $h_t$ und $h_x$ den jeweiligen Diskretisierungsgrößen entsprechen.\newline
-Nun setzt man obige Definitionen in die dimensionlose DGL ein und löst nach $U_{i+1,j}$ auf:
-$$U_{i+1,j}=\frac{h_t^2}{h_x^2}(U_{i,j+1}-2U_{i,j}+U_{i,j-1})-\gamma |U_{i,j}-U_{i-1,j}| (U_{i,j}-U_{i-1,j})+2U_{i,j}-U_{i-1,j}$$
+Nun setzt man obige Definitionen in die dimensionlose DGL ein und löst nach $U_{i+1,j}$ auf. Wir verwenden dabei auch $U_{t}=\frac{U_{i+1,j}-U_{i,j}}{h_t}$, was zu einer stabileren Simulation führte. Man kommt also auf die finale Formel: $$U_{i+1,j}=\frac{1}{1+\gamma |u_{i,j}-u_{i-1,j}|}(\frac{h_t^2}{h_x^2}(U_{i,j+1}-2U_{i,j}+U_{i,j-1})+2u_{i,j}-u_{i-1,j}+\gamma|u_{i,j}-u_{i-1,j}|u_{i,j})$$
 Mit Hilfe dieser Formel wollen wir nun für verschiedene Zeiten jeweils alle Ortskoordinaten ermitteln und das Problem so simulieren. Dabei ist zu erwähnen, dass die Simulation von dem Hammerschlag ausgeht und auf Grunde der Anfangswerte (für alle x außer am Hammerschlag):
 $$\frac{\partial\psi(x,t=0)}{\partial t}=0, \enspace \psi(x,0)=0$$ 
 gilt, dass wir zum Start $U_{0,0.26}=U_{0-1,0.26}=\frac{0.01m}{0.4m}$ wählen können.
@@ -66,7 +65,9 @@ u[1, 0.26*steps] <- strike/l
 for (i in time){
   for (j in step){
     
-    u[i+1,j] = 1 / (1 + gamma * abs(u[i, j] - u[i-1, j])) * (dxdt  * (u[i, j+1] - 2*u[i, j] + u[i, j-1]) + 2*u[i, j] - u[i-1, j] + gamma * abs(u[i, j] - u[i-1, j]) * (u[i,j]))
+    u[i+1,j] = 1 / (1 + gamma * abs(u[i, j] - u[i-1, j])) * (dxdt  * (u[i, j+1] 
+    - 2*u[i, j] + u[i, j-1]) + 2*u[i, j] - u[i-1, j] + gamma * abs(u[i, j] - 
+    u[i-1, j]) * (u[i,j]))
     
     
   }
@@ -74,7 +75,8 @@ for (i in time){
 
 
 #Plot der örtlichen Werte zu verschiedenen Zeitpunkten
-plot(1:steps, u[2,], "l", col=rainbow(6)[1], main="Örtliche Auftragung für verschiedene Zeiten", xlab=TeX(r'($\frac{l}{x} * 1000$)'), ylab=TeX(r'($\phi$)'))
+plot(1:steps, u[2,], "l", col=rainbow(6)[1], main="Örtliche Auftragung für 
+verschiedene Zeiten", xlab=TeX(r'($\frac{l}{x} * 1000$)'), ylab=TeX(r'($\phi$)'))
 lines(1:steps, u[100,], col=rainbow(6)[2])
 lines(1:steps, u[500,], col=rainbow(6)[3])
 lines(1:steps, u[1000,], col=rainbow(6)[4])
@@ -88,10 +90,13 @@ lines(1:steps, u[20000,], col=rainbow(6)[6])
 plot((1:times)*dt, u[,260], "l", main="Zeitliche Auftragung für einen Ort", xlab=TeX(r'($\tau$)'), ylab=TeX(r'($\phi$)'))
 ```
 
+## Erläuterung
+
+Man erkennt sowohl den "Einschwingvorgang", sowie eine stabile Schwingung und wieder eine Überlagerung. Wie zuerwarten ist genau $\tau$ eine komplette Welle, bis es wieder zu einer Überlagerung kommt. Dies lässt sich besonders gut für die zeitliche Auftragung am Ort des Hammerschlags erkennen. Die Ausbreitung wiederum erkennt man gut an den verschiedenen simulierten Wellen für verschiedene Zeiten.
+
 # Spektrum der Saite
 
-
-
+Wir wollen nun mit unserer FFT das Spektrum der Saitenschwingung berechnen und auftragen. Wir erwarten dabei einen Grundton und mindestens 5 folgende Obertöne. Dazu verwenden wir die FFT an verschiedenen Orten um den Ort des Hammerschlags.
 
 ## Code
 
@@ -170,7 +175,7 @@ l = 0.4
 roh = 0.006
 
 #Ausbreitungsgeschwindigkeit
-c = 1/2 * sqrt(Force/roh)
+c = 1./2.*sqrt(Force/roh)
 
 
 r = 14
@@ -188,7 +193,8 @@ for (i in c(1:15)){
 
 
 #Plotten
-plot(seq(1, 20000, length.out=(2^r))* dt * c/l, Re(unlist(a_list[1])), "l", col="red", ylim=c(0,0.01), main="Zeitliche FFT für festen Ort", ylab="", xlab=TeX('($Hz$)'))
+plot(seq(1, 20000, length.out=(2^r))* dt * c/l, Re(unlist(a_list[1])), "l", 
+col="red", ylim=c(0,0.01), main="Zeitliche FFT für festen Ort", ylab="", xlab=TeX('($Hz$)'))
 
 
 for (i in c(1:15)){
@@ -200,9 +206,14 @@ for (i in c(1:15)){
 
 ```
 
-# Ungedämpft
+## Erläuterung
 
+Das Ergebnis deckt sich nur sehr bedingt mit den Erwartungen, wenn man das Spektrum ab ca 400Hz betrachtet (ab hier ist der "Einschwingvorgang" abgelaufen und die eigentliche erste Schwingung startet). Vergleicht man die hier erhaltenen Werte mit der Literatur für einen hamonischen Kammerton $a^1$ so ergäbe sich für den Grundton 440 Hz, für den ersten Oberton	880 Hz, für den dritten 1320 Hz usw. Natürlich betrachtet unsere Simulation eine Dämpfung, der Grundton scheint jedoch auch grob bei 440 Hz zu liegen, während die weiteren Peaks in keinster Weise diesem Verlauf folgen. Das Ergebnis ist also durchaus skeptisch zu bewerten, auch das keine deutlichen Peaks erscheinen, die sich eindeutig den Obertönen zuordnen lassen, lässt auf einen Fehler in der FFT oder der Auftragung schließen.\newline
+Dennoch soll nun mit vorhandener Simulation und FFT weiter gearbeitet werden.
 
+# Ungedämpftes Verhalten
+
+Anhand des ungedämpften Falles $(\gamma=0)$ wollen wir noch einmal die Simulation, sowie die FFT und das Spektrum hinsichtlich der Stabilität bewerten und diskutieren.
 
 ## Simulation
 ```{r, echo=FALSE}
@@ -270,5 +281,28 @@ for (i in c(1:15)){
 
 
 ```
+
+# Diskussion
+
+Für eine ungedämpfte Simulation, ist die Dämpfung der Amplituden in einer Welle (etwas) geringer. Hier wäre unserer Meinung nach ein deutlicherer Unterschied im Vergleich zur gedämpften Simuation zu erwarten. Das durch die FFT estellte Spektrum ändert sich nicht erkennbar, was eigentlich nicht zu erwarten wäre. Es deckt sich aber insofern mit der Simulation, da sich diese eben auch (fast) nicht verändert hat. Ob dies nun an mangelnder Stabilität liegt oder ein anderer Fehler vorliegt, lässt sich nicht mit Sicherheit sagen. Letzteres erscheint jedoch wahrscheinlicher. 
+
+
+#  Zeitliche Auflösung der Amplituden der verschiedenen Frequenzen
+
+Es sollen die Amplituden der verschiedenen Frequenzen zeitlich aufgelöst werden und erläutert werden, wodurch sich deren Verlauf zu einer linearen Dämpfung unterscheidet.
+Das Vorgehen für die zeitliche Auflösung der Amplituden ist nicht bekannt. Wir vermuten eine quadratische Dämpfung der Amplituden, was ein Vergleich mit der DGL ergibt. Für den ungedämpften Fall sollten sich die Amplituden des Spektrums natürlich zeitlich in keinster Weise ändern.
+
+#Fazit
+
+Leider ist das Gesamtergebnis eher schlecht zu bewerten. Lediglich bei der Simulation des Hammerschlages gelang es uns (unserer Meinung nach) sinnvolle Ergebnisse zuliefern, wobei der Vergleich mit der ungedämpften Simulation auch hier Fragen aufwirft. \newline
+Die FFT und anschließende Ordnung der Werte lieferte nicht die eigentlich deutlich erkennbaren Obertöne. \newline
+Der Vergleich mit der ungedämpften Simulation bestätigt unsere Vermutung, dass der Code/die Herangehensweise mit Fehlern behaftet ist und lässt keine direkte Auskunft über die Stabilität zu.\newline
+Bei der zeitlichen Auflösung der Amplituden der verschiedenen Frequenzen gelang es uns nicht dies aufzutragen und eine Dikussion und Vergleich der Dämpfung konnte daher nur hypothetisch durchgeführt werden.\newline
+Trotz einigen Bemühungen konnte leider kein besseres Endergebnis erzielt werden.
+
+## Literatur
+
+\textit{Vorlesungskript, sowie Vorlesung vom 16.6.2021 und 18.6.2021}
+\textit{Wikipedia Oberton, https://de.wikipedia.org/wiki/Oberton#Erl%C3%A4uterungsbeispiel:_Kammerton_a1_und_die_ersten_f%C3%BCnf_Harmonischen ,Stand: 6.7.2021}
 
 
