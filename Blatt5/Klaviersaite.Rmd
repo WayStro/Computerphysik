@@ -64,7 +64,10 @@ u[1, 0.26*steps] <- strike/l
 #Simulation
 for (i in time){
   for (j in step){
+    
     u[i+1,j] = 1 / (1 + gamma * abs(u[i, j] - u[i-1, j])) * (dxdt  * (u[i, j+1] - 2*u[i, j] + u[i, j-1]) + 2*u[i, j] - u[i-1, j] + gamma * abs(u[i, j] - u[i-1, j]) * (u[i,j]))
+    
+    
   }
 }
 
@@ -115,7 +118,6 @@ FFT <- function(func, r){
         
         a = 2*k*m +j
         b = a + m
-        
         func[a] = func[a] + func[b]
         func[b] = koeff(n,Kap*j) * (func[a] - 2*func[b])
         
@@ -156,26 +158,32 @@ sort <- function(n, toSort){
   }
   return(Sorted)
 }
-r = 9
+
+Force = 743.4
+l = 0.4
+roh = 0.006
+
+c = 1/2 * sqrt(Force/roh)
+
+r = 14
 n = 2^r
 
-a_list <- list(sort(n, FFT(u[,200], r)))
+tmp <- sort(n, FFT(u[,245], r))
+a_list <- list(tmp)
 
 
-for (i in c(1:60)){
-  temp <- sort(n, FFT(u[,200+i], r))
+for (i in c(1:15)){
+  temp <- sort(n, FFT(u[,245+i], r))
   a_list <- c(a_list, list(temp))
 }
 
 
+plot(seq(1, 20000, length.out=(2^r))* dt * c/l, Re(unlist(a_list[1])), "l", col="red", ylim=c(0,0.01))
 
 
-plot(1/seq(0, times, length.out=2^r), Re(unlist(a_list[1])), "l", col="red", ylim=c(0.,0.02))
-
-
-for (i in c(1:60)){
+for (i in c(1:15)){
   
-  lines(1/seq(0, times, length.out=2^r), Re(unlist(a_list[1+i])), col=rainbow(length(c(1:60)))[i])
+  lines(seq(1, 20000, length.out=(2^r))* dt* c/l, Re(unlist(a_list[1+i])), col=rainbow(length(c(1:15)))[i])
   
 }
 
