@@ -37,60 +37,150 @@ $$\frac{\partial\psi(x,t=0)}{\partial t}=0, \enspace \psi(x,0)=0$$
 gilt, dass wir zum Start $U_{0,0.26}=U_{0-1,0.26}=\frac{0.01m}{0.4m}$ wählen können.
 
 ## Code
-
-```{Rcpp}
-#include <stdio.h>
-#include <math.h>
-#include <Rcpp.h>
-
-
-using namespace Rcpp;
-
-
-//[[Rcpp::export]]
-NumericMatrix Entwicklung(NumericMatrix u, int steps, double dxdt, int i, double gamma){
-
-  
-  
-    for (int j = 0; j < steps; j++)
-    {
-        u(i+1 , j) = dxdt * (u(i, j+1) - 2*u(i, j) + u(i, j-1)) + 2*u(i, j) - u(i-1, j) - gamma* abs(u(i, j) - u(i-1, j))*(u(i, j) -u(i-1, j));
-    }
-    
-    return u;
-}
-```
-
-
-
-
 ```{r}
-strike <- 0.01
-l <- 0.4
-steps <- 100
-times <- 100
-dx <- 0.4*0.01
-dt <- 0.01
-gamma <- 1./3.
+#Anfangswerte und Zeit/Step Einstellungen
+strike = 0.01
+l = 0.4
+steps = 1000
+times = 20000
+dx = 1/steps
+dt = 1/10000
+gamma = 1./3.
 
-dxdt <- dx^2/dt^2
+dxdt = (dt^2)/(dx^2)
 
-time <- c(2:100)
-
-mat <- matrix(0, nrow = times,ncol = steps)
-
-mat[2, 26] <- strike/l
+time <- c(2:(times-1))
+step <- c(2:(steps-1))
 
 
+#Auffüllen der Matrix mit Nullen
+u <- matrix(0.0, nrow = times,ncol = steps)
+
+#Startwerte einfügen
+u[2, 0.26*steps] <- strike/l
+u[1, 0.26*steps] <- strike/l
+
+
+#Simulation
 for (i in time){
-  Entwicklung(mat,steps,dxdt,i,gamma)
+  for (j in step){
+    u[i+1,j] = 1 / (1 + gamma * abs(u[i, j] - u[i-1, j])) * (dxdt  * (u[i, j+1] - 2*u[i, j] + u[i, j-1]) + 2*u[i, j] - u[i-1, j] + gamma * abs(u[i, j] - u[i-1, j]) * (u[i,j]))
+  }
 }
 
 
-mat
+#Plot der örtlichen Werte zu verschiedenen Zeitpunkten
+plot(1:steps, u[2,], "l", col=rainbow(6)[1])
+lines(1:steps, u[100,], col=rainbow(6)[2])
+lines(1:steps, u[500,], col=rainbow(6)[3])
+lines(1:steps, u[1000,], col=rainbow(6)[4])
+lines(1:steps, u[10000,], col=rainbow(6)[5])
+lines(1:steps, u[20000,], col=rainbow(6)[6])
+
+
+
+
+
+plot((1:times)*dt, u[,260], "l")
 ```
 
 # Spektrum der Saite
+
+
+
+
+## Code
+
+```{r}
+koeff <- function(n,k){
+  
+  w = complex(real = cos(-2*pi*k/n), imaginary = sin(-2*pi*k/n))  
+  
+  return(w)
+}
+
+
+
+
+
+FFT <- function(func, r){
+  
+  n = 2^r
+  m = n/2
+  Kap = 1
+  
+  for (i in c(1:r)){
+    for (k in c(1: Kap)){
+      for (j in c(1: m)){
+        
+        a = 2*k*m +j
+        b = a + m
+        
+        func[a] = func[a] + func[b]
+        func[b] = koeff(n,Kap*j) * (func[a] - 2*func[b])
+        
+      }
+    }
+    
+    m = m/2
+    Kap = 2*Kap
+  }
+  
+  return(func/sqrt(n))
+}
+
+
+
+
+sort <- function(n, toSort){
+  
+  vec <- c(1: n)
+  l = 0
+  Sorted <- c(1: n)
+  for (i in c(1: n-1)){
+    
+    vec[i] = l
+    m = n/2
+    while (m <= l){
+      l = l-m
+      m = m/2
+    }
+    l = l + m
+  }
+  
+  vec[n] = n-1
+  
+  for (i in c(1: n)){
+    
+    Sorted[i] = toSort[vec[i]]
+  }
+  return(Sorted)
+}
+r = 9
+n = 2^r
+
+a_list <- list(sort(n, FFT(u[,200], r)))
+
+
+for (i in c(1:60)){
+  temp <- sort(n, FFT(u[,200+i], r))
+  a_list <- c(a_list, list(temp))
+}
+
+
+
+
+plot(1/seq(0, times, length.out=2^r), Re(unlist(a_list[1])), "l", col="red", ylim=c(0.,0.02))
+
+
+for (i in c(1:60)){
+  
+  lines(1/seq(0, times, length.out=2^r), Re(unlist(a_list[1+i])), col=rainbow(length(c(1:60)))[i])
+  
+}
+
+
+```
 
 
 
