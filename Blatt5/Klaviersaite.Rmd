@@ -6,6 +6,9 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
+library(knitr)
+library(reticulate)
+library(Rcpp)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -76,7 +79,8 @@ for (i in time){
 
 #Plot der örtlichen Werte zu verschiedenen Zeitpunkten
 plot(1:steps, u[2,], "l", col=rainbow(6)[1], main="Örtliche Auftragung für 
-verschiedene Zeiten", xlab=TeX(r'($\frac{l}{x} * 1000$)'), ylab=TeX(r'($\phi$)'))
+verschiedene Zeiten", xlab=TeX(r'($\frac{l}{x} * 1000$)'), 
+ylab=TeX(r'($\phi$)'))
 lines(1:steps, u[100,], col=rainbow(6)[2])
 lines(1:steps, u[500,], col=rainbow(6)[3])
 lines(1:steps, u[1000,], col=rainbow(6)[4])
@@ -87,7 +91,8 @@ lines(1:steps, u[20000,], col=rainbow(6)[6])
 
 
 
-plot((1:times)*dt, u[,260], "l", main="Zeitliche Auftragung für einen Ort", xlab=TeX(r'($\tau$)'), ylab=TeX(r'($\phi$)'))
+plot((1:times)*dt, u[,260], "l", main="Zeitliche Auftragung für einen Ort",
+     xlab=TeX(r'($\tau$)'), ylab=TeX(r'($\phi$)'))
 ```
 
 ## Erläuterung
@@ -302,8 +307,10 @@ Trotz einigen Bemühungen konnte leider kein besseres Endergebnis erzielt werden
 
 # Literatur
 
+\textit{Wikipedia Oberton, 
+\url{https://de.wikipedia.org/wiki/Oberton} ,Stand 6.7.2021}
+
 \textit{Vorlesungskript, sowie Vorlesung vom 16.6.2021 und 18.6.2021}
 
-\textit{Wikipedia Oberton, \url{https://de.wikipedia.org/wiki/Oberton#Erl%C3%A4uterungsbeispiel:_Kammerton_a1_und_die_ersten_f%C3%BCnf_Harmonischen} ,Stand 6.7.2021}
 
 
