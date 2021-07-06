@@ -284,7 +284,7 @@ for (i in c(1:15)){
 
 # Diskussion
 
-Für eine ungedämpfte Simulation, ist die Dämpfung der Amplituden in einer Welle (etwas) geringer. Hier wäre unserer Meinung nach ein deutlicherer Unterschied im Vergleich zur gedämpften Simuation zu erwarten. Das durch die FFT estellte Spektrum ändert sich nicht erkennbar, was eigentlich nicht zu erwarten wäre. Es deckt sich aber insofern mit der Simulation, da sich diese eben auch (fast) nicht verändert hat. Ob dies nun an mangelnder Stabilität liegt oder ein anderer Fehler vorliegt, lässt sich nicht mit Sicherheit sagen. Letzteres erscheint jedoch wahrscheinlicher. 
+Für eine ungedämpfte Simulation, sehen wir, sofern sichtbar, auf lange Sicht keine Abnahme der Amplitude. Das durch die FFT estellte Spektrum ändert sich nicht erkennbar, was auch zu erwarten wäre, da die Seite ja nun immer noch mit dem gleichen Ton schwingt, jedoch nicht ausklingt. Das spricht für ein stabiles Verfahren, obwohl natürlich das Ergebnis der FFT immer noch kritisch zu bewerten ist, da nicht eindeutige Obertöne erkennbar sind.
 
 
 #  Zeitliche Auflösung der Amplituden der verschiedenen Frequenzen
@@ -292,17 +292,18 @@ Für eine ungedämpfte Simulation, ist die Dämpfung der Amplituden in einer Wel
 Es sollen die Amplituden der verschiedenen Frequenzen zeitlich aufgelöst werden und erläutert werden, wodurch sich deren Verlauf zu einer linearen Dämpfung unterscheidet.
 Das Vorgehen für die zeitliche Auflösung der Amplituden ist nicht bekannt. Wir vermuten eine quadratische Dämpfung der Amplituden, was ein Vergleich mit der DGL ergibt. Für den ungedämpften Fall sollten sich die Amplituden des Spektrums natürlich zeitlich in keinster Weise ändern.
 
-#Fazit
+# Fazit
 
-Leider ist das Gesamtergebnis eher schlecht zu bewerten. Lediglich bei der Simulation des Hammerschlages gelang es uns (unserer Meinung nach) sinnvolle Ergebnisse zuliefern, wobei der Vergleich mit der ungedämpften Simulation auch hier Fragen aufwirft. \newline
+Leider ist das Gesamtergebnis eher schlecht zu bewerten. Lediglich bei der Simulation des Hammerschlages gelang es uns (unserer Meinung nach) sinnvolle Ergebnisse zuliefern. \newline
 Die FFT und anschließende Ordnung der Werte lieferte nicht die eigentlich deutlich erkennbaren Obertöne. \newline
-Der Vergleich mit der ungedämpften Simulation bestätigt unsere Vermutung, dass der Code/die Herangehensweise mit Fehlern behaftet ist und lässt keine direkte Auskunft über die Stabilität zu.\newline
+Der Vergleich mit der ungedämpften Schwingung lässt zumindestens die Stabilität positiv bewerten, auch wenn Fragen bezüglich des Spektrums bleiben.\newline
 Bei der zeitlichen Auflösung der Amplituden der verschiedenen Frequenzen gelang es uns nicht dies aufzutragen und eine Dikussion und Vergleich der Dämpfung konnte daher nur hypothetisch durchgeführt werden.\newline
 Trotz einigen Bemühungen konnte leider kein besseres Endergebnis erzielt werden.
 
-## Literatur
+# Literatur
 
 \textit{Vorlesungskript, sowie Vorlesung vom 16.6.2021 und 18.6.2021}
-\textit{Wikipedia Oberton, https://de.wikipedia.org/wiki/Oberton#Erl%C3%A4uterungsbeispiel:_Kammerton_a1_und_die_ersten_f%C3%BCnf_Harmonischen ,Stand: 6.7.2021}
+
+\textit{Wikipedia Oberton, \url{https://de.wikipedia.org/wiki/Oberton#Erl%C3%A4uterungsbeispiel:_Kammerton_a1_und_die_ersten_f%C3%BCnf_Harmonischen} ,Stand 6.7.2021}
 
 
