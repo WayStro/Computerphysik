@@ -1,0 +1,71 @@
+---
+title: "Isingmodelllayout"
+author: "Wayne Ströbel und Silas Müller"
+header-includes:
+   - \usepackage{braket}
+date: "10.7.2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Das Quanten-Isingmodell
+
+Beim Quanten Isingmodell mit transversalem Feld sind N quantenmechanische Spins auf einem eindimensionalen Gitter angeordnet. Der Hamilton-Operator, der die Dynamik dieser Spins mit offenen Randbedingungen beschreibt, hat
+folgende Form:
+$$H=\sum_{i=0}^{N-2}\sigma_i^x \otimes \sigma_{i+1}^x+g\sum_{i=0}^{N-1}\sigma_i^z$$
+Der erste Term des Hamiltonoperators ist der Wechselwirkungsterm
+zwischen den Spins an den Gitterpunkten $i$ und $i+1$. Der zweite Term beschreibt ein externes magnetisches Feld mit Kopplung $g$.
+Mit den bekannten Paulimatrizen $\sigma_i^x$ und $\sigma_i^z$ jeweils am Gitterpunkt (Zustand) $i$. \newline
+Als Basis der Zustände an einem Gitterpunkt i wählen wir die Eigenbasis
+von $\sigma^z$, also:
+$$\ket{\Phi}=\alpha_0 \ket{0} + \alpha_1 \ket {1}$$
+Dabei gilt auf Grund der Normierung für die Amplituden $\alpha_i$: $\sum_i\alpha_i^2=1$.
+Der Zustand für alle Spins ergibt sich dann aus dem Tesnorprodukt aller Einspinzustände an den Gitterpunkten 0 bis N-1 ,also $\ket{00\dots 00}$,$\ket{00\dots 01}$,$\ket{00\dots 10}$,$\dots$ .
+Es gibt $2^N$ solcher Basiszustände und dementsprechend $2^N$ Amplituden. \newline
+Das Modell hat bei $g=1$ einen Quanten-Phasenübergang, der in der transversalen Magnetisierung
+$$M=\frac{1}{N}\braket{\psi|\sum_{i=0}^{N-1}\sigma_i^z|\psi}$$
+sichtbar wird, wobei $\ket{\psi}$ ein Zustand des N-Spin-Systems ist.
+
+# Aufgabenstellung
+
+Wir sollen die Grundzustandenergie, Grundzustandwellenfunktion und Magnetisierung M im Grunszustand für N=2, N=4, N=6, N=8 und N=10 für $g\in[0,2]$ bestimmen. \newline
+Außerdem soll die Energie und die Magnetisierung als Funktion von g dargestellt werden.\newline
+Abschließend vergleichen wir die Kurven für verschiedene N, interpretieren die Ergebnisse und diskutieren das Konvergenzverhalten des Algorithmus für N = 4 und g = 0.5.
+
+# Vorüberlegungen
+
+Es sei hier zuerst explizit auf die Vorlesung vom 7.7.2021 verwiesen, in welcher die Theorie und genauere Erläuterung zu finden ist. Hier soll noch einmal das wichtigste für den Algorithmus hervorgehoben und unsere Vorgehensweise erläutert werden. \newline
+ÜBERLEGUNGEN.
+
+
+# Grundzustandenergie, Grundzustandswellenfunktion
+
+
+
+## Code 
+
+
+## Ergebnisse
+
+
+# Magnetisierung als Funktion von g
+
+
+
+## Code/Plots
+
+
+
+## Vergleich für verschiedene N und Interpretation
+
+
+
+# Diskussion des Konvergenzverhaltens
+
+
+# Fazit
+
+
