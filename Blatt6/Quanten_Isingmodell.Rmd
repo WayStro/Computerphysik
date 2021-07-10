@@ -6,25 +6,65 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
+library(knitr)
+library(data.table)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r}
+#Zustandsfunktion, WICHTIG: <00001| enspricht hier 10000
+zufu <- function(N){
+  l <- rep(list(0:1), N)
+  expand.grid(l)
+}
 
-```{r cars}
-summary(cars)
+#Sigma_z_i; Spalten = N, Zeilen = N^2
+sigm_zi <- function(mat, N, i){
+  mat[i] <- -mat[i]
+  mat
+}
+
+#Sigma_x_i; 
+sigma_xi <- function(mat, N, i){
+  for (a in c(1:(2^N-1))){
+    for (b in c((a+1):2^N)){
+      tmp <- mat[a,] - mat[b,]
+      if (sqrt(sum(tmp^2)) == 1 && unlist(unname(abs(tmp[i]))) == 1){
+        tmp2 <- mat[b,]
+        mat[b,] <- mat[a,]
+        mat[a,] <- tmp2
+      }
+    }
+  }
+  mat
+}
+
+
+
+
+
+
+N <- 4
+mat <- zufu(N)
+
+mat1 <- sigma_xi(mat, N, 1)
+mat2 <- sigma_xi(mat1, N ,2)
+mat2
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+
+
+
+## Literatur
+
+\textit{Zustandsfunktion, 
+\url{https://stackoverflow.com/questions/3993546/how-to-generate-a-matrix-of-combinations}, Stand: 10.07.2021}
+
