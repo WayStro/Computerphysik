@@ -6,25 +6,139 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
+library(knitr)
+library(data.table)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r}
+#Zustandsfunktion, WICHTIG: <00001| enspricht hier 10000
+zufu <- function(N){
+  l <- rep(list(0:1), N)
+  expand.grid(l)
+}
 
-```{r cars}
-summary(cars)
+#Sigma_z_i; Spalten = N, Zeilen = N^2
+sigm_zi <- function(mat, N, i){
+  mat[i] <- -mat[i]
+  mat
+}
+
+#Sigma_x_i; 
+sigma_xi <- function(mat, N, i){
+  for (a in c(1:(2^N-1))){
+    for (b in c((a+1):2^N)){
+      tmp <- mat[a,] - mat[b,]
+      if (sqrt(sum(tmp^2)) == 1 && unlist(unname(abs(tmp[i]))) == 1){
+        tmp2 <- mat[b,]
+        mat[b,] <- mat[a,]
+        mat[a,] <- tmp2
+      }
+    }
+  }
+  mat
+}
+
+
+
+
+
+
+N <- 4
+mat <- zufu(N)
+
+mat
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+
+Hamilton <- function(g, SIGMA_X_SUM, SIGMA_Z_SUM){
+  
+  ham <- SIGMA_X_SUM + g*SIGMA_Z_SUM
+  
+}
+
+TENSORPRODUKT <- function(x1, ...){
+  r <- x1
+  for (vi in list(...)){
+    r <- outer(r, vi)
+  }
+  r
+}
+
+EINHEITSMATRIX = matrix(c(1,0,0,1), nrow=2, ncol=2)
+SIGMAZ = matrix(c(1,0,0,-1), nrow=2, ncol=2)
+SIGMAX = matrix(c(0,1,1,0), nrow=2, ncol=2)
+
+SIGMA_Z_SUM <- function(n, EINHEITSMATRIX, SIGMAZ){
+  
+  value <- 0
+  l <- 0
+  
+  for (i in c(1:n)) {
+    
+    for (k in 1:n) {
+      l[k] <- list(EINHEITSMATRIX)
+    }
+  
+    l[i] <- list(SIGMAZ)
+    
+    for (a in c(1:(n-1))) {
+      l[1] <- list(TENSORPRODUKT(l[[a]], l[[a+1]]))
+    }
+    
+    value <- value + l[[1]]
+  }
+  value
+  
+}
+
+SIGMA_X_SUM <- function(n, EINHEITSMATRIX, SIGMAX){
+  
+  value <- 0
+  l <- 0
+  
+  for (i in c(1:n-1)) {
+    
+    for (k in 1:n) {
+      l[k] <- list(EINHEITSMATRIX)
+    }
+  
+    l[i] <- list(SIGMAX)
+    l[i+1] <- list(SIGMAX)
+    
+    for (a in c(1:(n-1))) {
+      l[1] <- list(TENSORPRODUKT(l[[a]], l[[a+1]]))
+    }
+    
+    value <- value + l[[1]]
+  }
+  value
+  
+}
+
+g <- 2
+n <- 2
+
+ham <- Hamilton(g, SIGMA_X_SUM(n, EINHEITSMATRIX, SIGMAX), SIGMA_Z_SUM(n, EINHEITSMATRIX, SIGMAZ))
+ham
+
+
+
+##### PROBLEM: 1 1 1 1 IN FALSCHER DIAGONALEN
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+
+
+## Literatur
+
+\textit{Zustandsfunktion, 
+\url{https://stackoverflow.com/questions/3993546/how-to-generate-a-matrix-of-combinations}, Stand: 10.07.2021}
+
