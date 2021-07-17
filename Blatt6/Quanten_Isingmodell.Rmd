@@ -8,6 +8,7 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
+library(matlib)
 library(arrayhelpers)
 library(knitr)
 library(data.table)
@@ -55,13 +56,14 @@ Wir gehen nun wie oben vor und wollen den Hamiltonoperator, sowie seine Eigenwer
 ## Code 
 
 ```{r}
-
+#Hamiltonfunktion
 Hamilton <- function(g, SIGMA_X_SUM, SIGMA_Z_SUM){
   
   ham <- SIGMA_X_SUM + g*SIGMA_Z_SUM
   
 }
 
+#Definition des mehrfachen Tensorprodukts
 TENSORPRODUKT <- function(x1, ...){
   r <- x1
   for (vi in list(...)){
@@ -70,10 +72,14 @@ TENSORPRODUKT <- function(x1, ...){
   r
 }
 
-EINHEITSMATRIX = matrix(c(1,0,0,1), nrow=2, ncol=2)
+
+#Definitionen
+EINHEITSMATRIX = diag(2)
 SIGMAZ = matrix(c(1,0,0,-1), nrow=2, ncol=2)
 SIGMAX = matrix(c(0,1,1,0), nrow=2, ncol=2)
 
+
+#Berechnung der g komponente der Hamiltonfunktion
 SIGMA_Z_SUM <- function(n, EINHEITSMATRIX, SIGMAZ){
   
   value <- 0
@@ -97,6 +103,8 @@ SIGMA_Z_SUM <- function(n, EINHEITSMATRIX, SIGMAZ){
   
 }
 
+
+#Berechnung der SigmaX für Hamilton
 SIGMA_X_SUM <- function(n, EINHEITSMATRIX, SIGMAX){
   
   value <- 0
@@ -122,8 +130,8 @@ SIGMA_X_SUM <- function(n, EINHEITSMATRIX, SIGMAX){
   
 }
 
-
-Eigenvalue <- function( x, A, steps){
+#Vektoriteration 
+Eigenvalue1 <- function( x, A, steps){
   
   lambda <- 0
   
@@ -131,35 +139,127 @@ Eigenvalue <- function( x, A, steps){
     w <- A %*% x
     x <- w/sqrt(sum(w*Conj(w)))
     u <- A %*% x
-    lambda <- sqrt(sum(u*Conj(u)/sum(v*Conj(v))))
+    lambda <- sqrt(sum(u*Conj(u)/sum(x*Conj(x))))
   }
+  lambda
+}
+
+#Inverse Vektoriteration
+Eigenvalue2 <- function(x, sigm, A, steps){
+  
+  lamb_k <- rep(0, 2^n)
+  Identity <- diag(2^n)
+  
+  w <- x/sqrt(sum(x*Conj(x)))
+  lamb <- sigm
+  
+  for (k in (1:steps)) {
+    x <- inv(A - sigm*Identity) %*% w
+    w <- x/sqrt(sum(x*Conj(x)))
+    lamb_k[k] <- as.vector(w) %*% as.vector(A %*% w)
+  }
+  lamb_k
+}
+
+#Zufallsvektor
+randomvec <- function(n, range){
+  
+  sample(-range:range, 2^n)
+  
 }
 
 
+#Eingabewerte
+
+g <- seq(0,2, length.out=10)
+n <- c(2,4,6,8,10)
+tmp <- rep(0, length(g))
+l_ham <- list(tmp,tmp,tmp,tmp,tmp)
+
+b <- 1
+
+for (i in n) {
+  a <- 1
+  for (j in g) {
+    tmp[a] <- tail(unname(unlist(eigen(Hamilton(j, 
+              SIGMA_X_SUM(i, EINHEITSMATRIX, SIGMAX), SIGMA_Z_SUM(i, 
+              EINHEITSMATRIX, SIGMAZ)))[1])),1)
+    a <- a+1
+  }
+  l_ham[[b]] <- tmp
+  b <- b+1
+}
+
+#Plots
+
+plot(0,0, ylim=c(0, min(unlist(l_ham))), xlim=c(0,max(g)), 
+     main="Kopplung g <-> E0", xlab="g", ylab="E0", "n")
 
 
-
-
-g <- 1
-n <- 4
-
-ham <- Hamilton(g, SIGMA_X_SUM(n, EINHEITSMATRIX, SIGMAX), SIGMA_Z_SUM(n, EINHEITSMATRIX, SIGMAZ))
-
-ham
-
-
-
-
-
-
+for (l in 1:length(n)){
+  lines(g, l_ham[[l]], col=rainbow(length(n))[l])
+}
+legend("topleft", c("N=2","N=4","N=6","N=8","N=10"), fill=rainbow(length(n)))
 
 ```
 
-## Ergebnisse
-
-
-
 # Magnetisierung als Funktion von g
+
+```{r}
+#Funktion zur Magnetisierung
+Magnet <- function(n, SIGMA_Z_SUM, eigenvect){
+  
+  const <- 1/n
+  sum <- (eigenvect) %*% (SIGMA_Z_SUM %*% eigenvect)
+  mag <- const * sum
+  mag
+}
+
+#Nimmt die Eigenvektoren der niedrigsten Eigenwerte und addiert diese.
+Eigenvect <- function(n, ham){
+  summ <- rep(0, 2^n)
+  for (i in 1:length(eigen(ham)[[1]])) {
+    if (tail(eigen(ham)[[1]], 1) == eigen(ham)[[1]][i]) {
+      summ <- summ + as.vector(eigen(ham)[[2]][,i])
+    }
+  }
+  summ
+}
+
+#Eingabewerte
+
+g <- seq(0,2, length.out=4)
+n <- c(2,4,6,8,10)
+tmp <- rep(0, length(g))
+l_ham <- list(tmp,tmp,tmp,tmp,tmp)
+
+b <- 1
+
+for (i in n) {
+  a <- 1
+  for (j in g) {
+    tmp[a] <- unlist(Magnet(i, SIGMA_Z_SUM(i, EINHEITSMATRIX, SIGMAZ), 
+                            Eigenvect(i, Hamilton(j, SIGMA_X_SUM(i, EINHEITSMATRIX, SIGMAX), 
+                            SIGMA_Z_SUM(i, EINHEITSMATRIX, SIGMAZ)))))
+    a <- a+1
+  }
+  l_ham[[b]] <- tmp
+  b <- b+1
+}
+
+#Plots
+
+
+plot(0,0, ylim=c(0.1, min(unlist(l_ham))), xlim=c(0,max(g)), 
+     main="Kopplung g <-> M", xlab="g", ylab="M", "n")
+
+
+for (l in 1:length(n)){
+  lines(g, l_ham[[l]], col=rainbow(length(n))[l])
+}
+
+legend("bottomright", c("N=2","N=4","N=6","N=8","N=10"), fill=rainbow(length(n)))
+```
 
 
 
@@ -174,6 +274,29 @@ ham
 # Diskussion des Konvergenzverhaltens
 
 
+```{r, echo=FALSE}
+
+n <- 4
+g <- 0.5
+
+ham <- Hamilton(g, SIGMA_X_SUM(n, EINHEITSMATRIX, SIGMAX), SIGMA_Z_SUM(n, EINHEITSMATRIX, SIGMAZ))
+
+
+
+
+plot(0, 0, xlim=c(0,41), ylim=c(-4,4), "l", main="Konvergenzverhalten der Eigenwerte bei N=4 und g = 0.5", xlab="Schrittanzahl", ylab="Eigenwerte")
+
+for (i in seq(-5, 5, length.out=20)) {
+  lines(0:40, Eigenvalue2(randomvec(n, 10),i ,ham, 41))
+}
+
+for (i in 1:length(eigen(ham)[[1]])){
+  lines(40, eigen(ham)[[1]][i], col="red", "p")
+}
+
+```
+
+
 # Fazit
 
 
@@ -182,5 +305,6 @@ ham
 
 \textit{Tensor Product, 
 \url{https://stackoverflow.com/questions/8764954/outer-tensor-product-in-r}, Stand: 17.07.2021}
+
 \textit{Vorlesungen vom 30.6.2021 (Eigenwerte und Eigenvektoren) und 7.7.2021 (Quanten-Ising-Modell)}
 
