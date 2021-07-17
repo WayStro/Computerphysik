@@ -6,6 +6,7 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
+library(arrayhelpers)
 library(knitr)
 library(data.table)
 knitr::opts_chunk$set(echo = TRUE)
@@ -98,7 +99,7 @@ Hamilton <- function(g, SIGMA_X_SUM, SIGMA_Z_SUM){
 TENSORPRODUKT <- function(x1, ...){
   r <- x1
   for (vi in list(...)){
-    r <- outer(r, vi)
+    r <- r %o% vi
   }
   r
 }
@@ -121,7 +122,7 @@ SIGMA_Z_SUM <- function(n, EINHEITSMATRIX, SIGMAZ){
     l[i] <- list(SIGMAZ)
     
     for (a in c(1:(n-1))) {
-      l[1] <- list(TENSORPRODUKT(l[[a]], l[[a+1]]))
+      l[1] <- list(TENSORPRODUKT(l[[1]], l[[a+1]]))
     }
     
     value <- value + l[[1]]
@@ -133,9 +134,10 @@ SIGMA_Z_SUM <- function(n, EINHEITSMATRIX, SIGMAZ){
 SIGMA_X_SUM <- function(n, EINHEITSMATRIX, SIGMAX){
   
   value <- 0
-  l <- 0
   
-  for (i in c(1:n-1)) {
+  for (i in c(1:(n-1))) {
+    
+    l <- 0
     
     for (k in 1:n) {
       l[k] <- list(EINHEITSMATRIX)
@@ -145,7 +147,7 @@ SIGMA_X_SUM <- function(n, EINHEITSMATRIX, SIGMAX){
     l[i+1] <- list(SIGMAX)
     
     for (a in c(1:(n-1))) {
-      l[1] <- list(TENSORPRODUKT(l[[a]], l[[a+1]]))
+      l[1] <- list(TENSORPRODUKT(l[[1]], l[[a+1]]))
     }
     
     value <- value + l[[1]]
@@ -154,15 +156,37 @@ SIGMA_X_SUM <- function(n, EINHEITSMATRIX, SIGMAX){
   
 }
 
-g <- 2
-n <- 2
+
+Eigenvalue <- function( x, A, steps){
+  
+  lambda <- 0
+  
+  for (k in (1:steps)) {
+    w <- A %*% x
+    x <- w/sqrt(sum(w*Conj(w)))
+    u <- A %*% x
+    lambda <- sqrt(sum(u*Conj(u)/sum(v*Conj(v))))
+  }
+}
+
+
+
+
+
+
+g <- 1
+n <- 4
 
 ham <- Hamilton(g, SIGMA_X_SUM(n, EINHEITSMATRIX, SIGMAX), SIGMA_Z_SUM(n, EINHEITSMATRIX, SIGMAZ))
+
 ham
 
 
 
-##### PROBLEM: 1 1 1 1 IN FALSCHER DIAGONALE
+
+
+
+
 ```
 
 ## Ergebnisse
