@@ -1,6 +1,8 @@
 ---
 title: "Quanten Isingmodell"
 author: "Silas Müller, Wayne Ströbel"
+header-includes:
+   - \usepackage{braket}
 date: "10 7 2021"
 output: pdf_document
 ---
@@ -39,54 +41,18 @@ Abschließend vergleichen wir die Kurven für verschiedene N, interpretieren die
 # Vorüberlegungen
 
 Es sei hier zuerst explizit auf die Vorlesung vom 7.7.2021 verwiesen, in welcher die Theorie und genauere Erläuterung zu finden ist. Hier soll noch einmal das wichtigste für den Algorithmus hervorgehoben und unsere Vorgehensweise erläutert werden. \newline
-ÜBERLEGUNGEN.
+Wir wollen zuerst den Hamiltonoperator als Matrix explizit darstellen und anschließend die Eigenwerte (also die Energien bestimmen). Für den niedrigsten Eigenwert soll dann der normierte Eigenvektor gefunden werden, was dem Grundzustand entspricht. Dadurch sollen die gewünschten Ergebnisse und Auftragungen erreicht werden. \newline
+Dafür verwenden wir eineseits obige Definitionen, benötigen jedoch auch das Tensorprodukt um $\sigma_i^z$ und $\sigma_i^z \otimes \sigma_{i+1}^z$ zu berechnen. \newline
+So befindet sich $\sigma_i$ an der i-ten Stelle (mit 1 als 2x2-Einheitsmatrix): \newline
+$$1_0 \otimes 1_2 \otimes ...\otimes 1_{i-1} \otimes \sigma^z \otimes 1_{i+1} \otimes...\otimes 1_{N-1}=\sigma_i^z $$ bzw.
+$$1_0 \otimes 1_2 \otimes ...\otimes 1_{i-1} \otimes \sigma^x \otimes \sigma^x \otimes 1_{i+2} \otimes...\otimes 1_{N-1}=\sigma_i^x \otimes \sigma_{i+1}^x $$
+
 
 # Grundzustandenergie, Grundzustandswellenfunktion
 
-BLA
+Wir gehen nun wie oben vor und wollen den Hamiltonoperator, sowie seine Eigenwerte und entsprechenden Eigenvektoren abhängig von g konstruieren und letzlich auftragen.
 
 ## Code 
-
-```{r}
-#Zustandsfunktion, WICHTIG: <00001| enspricht hier 10000
-zufu <- function(N){
-  l <- rep(list(0:1), N)
-  expand.grid(l)
-}
-
-#Sigma_z_i; Spalten = N, Zeilen = N^2
-sigm_zi <- function(mat, N, i){
-  mat[i] <- -mat[i]
-  mat
-}
-
-#Sigma_x_i; 
-sigma_xi <- function(mat, N, i){
-  for (a in c(1:(2^N-1))){
-    for (b in c((a+1):2^N)){
-      tmp <- mat[a,] - mat[b,]
-      if (sqrt(sum(tmp^2)) == 1 && unlist(unname(abs(tmp[i]))) == 1){
-        tmp2 <- mat[b,]
-        mat[b,] <- mat[a,]
-        mat[a,] <- tmp2
-      }
-    }
-  }
-  mat
-}
-
-
-
-
-
-
-N <- 4
-mat <- zufu(N)
-
-mat
-```
-
-
 
 ```{r}
 
@@ -99,7 +65,7 @@ Hamilton <- function(g, SIGMA_X_SUM, SIGMA_Z_SUM){
 TENSORPRODUKT <- function(x1, ...){
   r <- x1
   for (vi in list(...)){
-    r <- r %o% vi
+    r <- kronecker(r,vi)
   }
   r
 }
@@ -201,7 +167,7 @@ ham
 
 
 
-## Vergleich für verschiedene N und Interpretation
+# Vergleich für verschiedene N und Interpretation
 
 
 
@@ -214,6 +180,7 @@ ham
 
 # Literatur
 
-\textit{Zustandsfunktion, 
-\url{https://stackoverflow.com/questions/3993546/how-to-generate-a-matrix-of-combinations}, Stand: 10.07.2021}
+\textit{Tensor Product, 
+\url{https://stackoverflow.com/questions/8764954/outer-tensor-product-in-r}, Stand: 17.07.2021}
+\textit{Vorlesungen vom 30.6.2021 (Eigenwerte und Eigenvektoren) und 7.7.2021 (Quanten-Ising-Modell)}
 
