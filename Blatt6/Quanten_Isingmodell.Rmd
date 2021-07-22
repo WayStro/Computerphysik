@@ -297,6 +297,8 @@ for (i in 1:length(eigen(ham)[[1]])){
 ```
 
 
+
+
 # Fazit
 
 
