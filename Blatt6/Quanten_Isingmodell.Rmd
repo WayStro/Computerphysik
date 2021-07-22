@@ -205,6 +205,10 @@ legend("topleft", c("N=2","N=4","N=6","N=8","N=10"), fill=rainbow(length(n)))
 
 # Magnetisierung als Funktion von g
 
+Wir wollen nun die Magnetisierung mit Hilfe der gefundenen Eigenvektoren mit obiger Formel abhängig von g und N auftragen. Das Verfahren benötigt jedoch für N=8 schon recht lange und deutlich länger für N=10, sodass dieser Fall in der PDF explizit gezeigt, aber im Code auskommentiert wird.
+
+## Code
+
 ```{r}
 #Funktion zur Magnetisierung
 Magnet <- function(n, SIGMA_Z_SUM, eigenvect){
@@ -262,14 +266,10 @@ legend("bottomright", c("N=2","N=4","N=6","N=8","N=10"), fill=rainbow(length(n))
 ```
 
 
-
-## Code/Plots
-
-
-
 # Vergleich für verschiedene N und Interpretation
 
-
+Zuerst zur Energieverteilung: Eine höhere Anzahl an Gitterpunkten (N) sorgt hier erkennbar für eine stärkere Bindungsenergie des Grundzustands. Die Abstände sind zwischen den einzelnen Energieniveaus gleich, wobei diese mit zunehmender Kopplung zunehmen. Außerdem lässt sich erkennen, dass die Energie jeweils mit zunehmender Kopplung weiter sinkt, wobei hohe N davon stärker als kleine N betroffen sind. \newline
+Die Magnetisierung liefert folgendes Bild: Alle N besitzen für eine Kopplung von 0 erwartungsgemäß keine Magnetisierung. Sie alle streben gegen $M=-1$, was einem Diamagneten entspricht. Des Weiteren lässt sich erkennen, dass geringere N schneller $M=-1$ laufen.
 
 # Diskussion des Konvergenzverhaltens
 
@@ -296,11 +296,14 @@ for (i in 1:length(eigen(ham)[[1]])){
 
 ```
 
-
+Wie im Code schon zu erkennen, haben wir für die Endergebnisse nicht unserern Code der Inversenvektoriteration verwendet, sonder die eigen-Funktion von R selbst. Dies lässt sich durch das geplottete Kovergenzverhalten erklären: \newline
+R (rote Punkte) liefert erwartungsgemäß 16 Eigenwerte und auch Eigenvektoren für N=4. Unser Code liefert (durch Variation von sigm) nur 12 Eigenwerte. Es lässt sich dabei erkennen das das Ergebnis dabei maßgeblich von der Wahl sigm abhängt und so gerade Eigenwerte, welche nah beieinander liegen einfach fehlen. Auf Grund dieses instabilen Verhaltens und ,da es uns nicht gelang dieses Problem zu beheben entschlossen wir uns die in R vorhandene Funktion zu nutzen. Dieses bietet auch einige weitere bedeutende Vorteile: \newline
+Die Ergebnisse sind nach Größe der Eigenwerte sortiert, sodass wir gezielt auf den kleinsten Eigenwert zugreifen konnten. Außerdem sind die Eigenvektoren und somit die Amplituden bereits normiert, was ebenfalls eine wichtige Voraussetzung war.
 
 
 # Fazit
 
+Letzlich ließen sich Grundzustände, die jeweiligen Energien und die Magnetisierung gut für die verschiedenen Kopplungen und Anzahl an Gitterpunkten N darstellen. Für N=10 benötigt unser Verfahren jedoch ausgesprochen lange. Leider mussten wir auf die Eigenfunktion von R zurückgreifen, um den niedrigsten Eigenwert stabil zu bestimmen (analog die Eigenvektoren). 
 
 
 # Literatur
