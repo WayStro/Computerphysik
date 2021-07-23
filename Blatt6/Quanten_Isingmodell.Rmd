@@ -232,8 +232,8 @@ Eigenvect <- function(n, ham){
 
 #Eingabewerte
 
-g <- seq(0,2, length.out=4)
-n <- c(2,4,6,8,10)
+g <- seq(0,2, length.out=10)
+n <- c(2,4,6,8)
 tmp <- rep(0, length(g))
 l_ham <- list(tmp,tmp,tmp,tmp,tmp)
 
@@ -303,7 +303,7 @@ Die Ergebnisse sind nach Größe der Eigenwerte sortiert, sodass wir gezielt auf
 
 # Fazit
 
-Letzlich ließen sich Grundzustände, die jeweiligen Energien und die Magnetisierung gut für die verschiedenen Kopplungen und Anzahl an Gitterpunkten N darstellen. Für N=10 benötigt unser Verfahren jedoch ausgesprochen lange. Leider mussten wir auf die Eigenfunktion von R zurückgreifen, um den niedrigsten Eigenwert stabil zu bestimmen (analog die Eigenvektoren). 
+Letzlich ließen sich Grundzustände, die jeweiligen Energien und die Magnetisierung gut für die verschiedenen Kopplungen und Anzahl an Gitterpunkten N darstellen. Für N=10 benötigt unser Verfahren jedoch zu lange. Leider mussten wir auf die Eigenfunktion von R zurückgreifen, um den niedrigsten Eigenwert stabil zu bestimmen (analog die Eigenvektoren). 
 
 
 # Literatur
